@@ -49,6 +49,24 @@
   #preview { min-height: 460px; padding: 18px 20px; border-radius: 10px; border: 2px solid #2c2f6e; background: var(--bg); }
   .status-line { font-size: 14px; color: var(--muted); margin: 0; }
 
+  /* about page editor */
+  .about-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; padding: 16px 18px; }
+  .about-card h3 { margin: 0; font-size: 18px; }
+  .about-card .meta { margin: 2px 0 0; }
+  .about-form .panel { padding: 20px; margin-bottom: 18px; }
+  .about-form h2 { margin: 0 0 4px; font-size: 22px; }
+  .about-form .panel > .hint:first-of-type { margin-top: 0; }
+  #a-bio { min-height: 260px; font-size: 17px; }
+  .rep { display: grid; gap: 10px; margin: 12px 0; }
+  .rep-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 10px; border-radius: 10px; background: var(--bg); border: 2px solid #2c2f6e; }
+  .rep-row .pair { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 8px; }
+  .rep-row .stack2 { display: grid; gap: 8px; }
+  .rep-row textarea { min-height: 72px; }
+  .rep-row .btn { padding: 6px 10px; font-size: 14px; }
+  .photo-box { aspect-ratio: 4 / 5; max-width: 200px; border-radius: 12px; border: 2px dashed #2c2f6e; display: grid; place-items: center; overflow: hidden; background: var(--bg); margin-bottom: 10px; color: var(--muted); font-size: 14px; text-align: center; padding: 8px; }
+  .photo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @media (max-width: 600px) { .rep-row .pair { grid-template-columns: 1fr; } }
+
   @media (max-width: 859px) {
     .grid { grid-template-columns: 1fr; }
     .side { position: static; }
@@ -60,7 +78,7 @@
 <body>
 <header class="masthead">
   <a class="brand" href="/">taniacryptid</a>
-  <nav aria-label="Main"><a href="/blog">blog</a><a href="/admin">editor</a></nav>
+  <nav aria-label="Main"><a href="/blog">blog</a><a href="/about">about</a><a href="/admin">editor</a></nav>
 </header>
 <main class="wrap">
   <p class="msg" id="msg" hidden></p>
@@ -76,6 +94,16 @@
       <div class="stack" style="justify-items:end">
         <a class="btn" href="#new">+ New post</a>
         <span class="who"><span id="who"></span> · <button class="linkish" id="logout" type="button">Log out</button></span>
+      </div>
+    </div>
+    <div class="panel about-card">
+      <div>
+        <h3>About page</h3>
+        <p class="meta" id="about-meta">Bio, fact sheet, directives and field log</p>
+      </div>
+      <div class="acts">
+        <a class="btn" href="#about">Edit About</a>
+        <a class="btn alt" href="/about" target="_blank" rel="noopener">View</a>
       </div>
     </div>
     <ul class="rows" id="rows"></ul>
@@ -146,6 +174,90 @@
       </aside>
     </div>
   </form>
+  <!-- about page editor -->
+  <form id="about-view" class="about-form" hidden>
+    <div class="bar">
+      <div>
+        <a class="back" href="#" id="about-back" style="margin-bottom:8px">← All posts</a>
+        <h1>About page</h1>
+      </div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h2>Intro</h2>
+          <div class="field">
+            <label for="a-tagline">Tagline</label>
+            <input type="text" id="a-tagline" maxlength="300" placeholder="Shows in yellow under the big ABOUT title">
+          </div>
+          <div class="field">
+            <label for="a-heading">Bio heading</label>
+            <input type="text" id="a-heading" maxlength="120" placeholder="Target identified">
+          </div>
+          <div class="field">
+            <div class="tabs" role="tablist">
+              <button class="btn alt" type="button" role="tab" id="a-tab-write" aria-selected="true">Write</button>
+              <button class="btn alt" type="button" role="tab" id="a-tab-preview" aria-selected="false">Preview</button>
+            </div>
+            <textarea id="a-bio" aria-label="Bio"></textarea>
+            <div id="a-preview" class="prose" hidden></div>
+            <p class="hint">Your bio, in Markdown. Leave a blank line between paragraphs.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Fact sheet</h2>
+          <p class="hint">The label and value list under your bio, like “Threat level: Low. Extremely friendly.”</p>
+          <div class="rep" id="a-specs"></div>
+          <button class="btn alt" type="button" id="a-add-spec">+ Add fact</button>
+        </div>
+
+        <div class="panel">
+          <h2>Mission directives</h2>
+          <p class="hint">The cards in the middle of the page. Text can use Markdown links, like [Read the blog](/blog). Remove them all to hide the section.</p>
+          <div class="rep" id="a-dirs"></div>
+          <button class="btn alt" type="button" id="a-add-dir">+ Add directive</button>
+        </div>
+
+        <div class="panel">
+          <h2>Field log</h2>
+          <p class="hint">Entries on the “classified” index card. They’re numbered automatically. Remove them all to hide the section.</p>
+          <div class="rep" id="a-log"></div>
+          <button class="btn alt" type="button" id="a-add-log">+ Add entry</button>
+        </div>
+
+        <div class="panel">
+          <h2>Sign-off</h2>
+          <div class="field">
+            <label for="a-signoff-title">Big closing line</label>
+            <input type="text" id="a-signoff-title" maxlength="120" placeholder="I'll be back.">
+          </div>
+          <div class="field">
+            <label for="a-signoff">Closing text</label>
+            <input type="text" id="a-signoff" maxlength="1000">
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel stack">
+          <p class="status-line" id="a-status">Loading…</p>
+          <button class="btn" type="submit" id="a-save">Save changes</button>
+          <a class="btn alt" href="/about" target="_blank" rel="noopener">View page ↗</a>
+        </div>
+        <div class="panel">
+          <label>Photo</label>
+          <div class="photo-box" id="a-photo-box">No photo. CRT Buddy shows instead.</div>
+          <div class="acts">
+            <button class="btn alt" type="button" id="a-photo-btn">Upload</button>
+            <button class="btn danger" type="button" id="a-photo-remove" hidden>Remove</button>
+          </div>
+          <p class="hint">Shown in the red targeting frame. A portrait photo works best.</p>
+        </div>
+        <button class="btn danger" type="button" id="a-reset">Reset to original text</button>
+      </aside>
+    </div>
+  </form>
   <input type="file" id="file-in" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
 </main>
 <script type="module">
@@ -201,12 +313,16 @@ let dirty = false;
 function route() {
   show('');
   const m = location.hash.match(/^#edit=(\d+)$/);
-  if (location.hash === '#new') openEditor(null);
+  if (location.hash === '#about') openAbout();
+  else if (location.hash === '#new') openEditor(null);
   else if (m) openEditor(Number(m[1]));
   else showList();
 }
 
 addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+$('about-back').addEventListener('click', e => {
+  if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
+});
 $('back-link').addEventListener('click', e => {
   if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
 });
@@ -215,7 +331,11 @@ $('back-link').addEventListener('click', e => {
 async function showList() {
   dirty = false;
   $('edit-view').hidden = true;
+  $('about-view').hidden = true;
   $('list-view').hidden = false;
+  api('/api/pages/about').then(a => {
+    $('about-meta').textContent = a.updatedAt ? `Edited ${new Date(a.updatedAt).toLocaleString()}` : 'Showing the original text. Not edited yet.';
+  }).catch(() => {});
   document.title = 'Blog editor · taniacryptid';
   try {
     const posts = await api('/api/posts?all=1');
@@ -258,6 +378,7 @@ function setStatus(post) {
 
 async function openEditor(id) {
   $('list-view').hidden = true;
+  $('about-view').hidden = true;
   $('edit-view').hidden = false;
   showTab('write');
   let post = null;
@@ -356,12 +477,13 @@ $('file-in').addEventListener('change', async e => {
   const file = e.target.files[0];
   e.target.value = '';
   if (!file) return;
-  const btn = uploadTarget === 'cover' ? $('cover-btn') : $('insert-img');
+  const btn = { cover: $('cover-btn'), photo: $('a-photo-btn'), body: $('insert-img') }[uploadTarget];
   const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Uploading…';
   try {
     const { key } = await upload(file);
     if (uploadTarget === 'cover') setCover(key);
+    else if (uploadTarget === 'photo') setPhoto(key);
     else {
       const ta = fields.body;
       const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
@@ -373,6 +495,130 @@ $('file-in').addEventListener('change', async e => {
   } catch (err) { showErr(err); }
   finally { btn.disabled = false; btn.textContent = label; }
 });
+// ---------- about page editor ----------
+const af = { tagline: $('a-tagline'), heading: $('a-heading'), bio: $('a-bio'), signoffTitle: $('a-signoff-title'), signoff: $('a-signoff') };
+let photo = null;
+
+function setPhoto(key) {
+  photo = key;
+  $('a-photo-box').innerHTML = key ? `<img src="${imgUrl(key, 'card')}" alt="Photo preview">` : 'No photo. CRT Buddy shows instead.';
+  $('a-photo-remove').hidden = !key;
+}
+
+// Repeatable rows: each kind knows how to draw its inputs and read them back
+const kinds = {
+  specs: { box: 'a-specs', blank: { label: '', value: '' }, html: v => `<div class="pair">
+      <input type="text" data-k="label" maxlength="80" aria-label="Label" placeholder="Label" value="${esc(v.label)}">
+      <input type="text" data-k="value" maxlength="300" aria-label="Value" placeholder="Value" value="${esc(v.value)}">
+    </div>` },
+  dirs: { box: 'a-dirs', blank: { title: '', body: '' }, html: v => `<div class="stack2">
+      <input type="text" data-k="title" maxlength="120" aria-label="Directive title" placeholder="Title" value="${esc(v.title)}">
+      <textarea data-k="body" maxlength="2000" aria-label="Directive text" placeholder="Text">${esc(v.body)}</textarea>
+    </div>` },
+  log: { box: 'a-log', blank: '', html: v => `<div class="stack2">
+      <textarea data-k="text" maxlength="2000" aria-label="Log entry" placeholder="What happened?">${esc(v)}</textarea>
+    </div>` },
+};
+function addRow(kind, value = kinds[kind].blank) {
+  const row = document.createElement('div');
+  row.className = 'rep-row';
+  row.innerHTML = kinds[kind].html(value) + `<div class="acts">
+      <button class="btn alt" type="button" data-move="-1" aria-label="Move up">↑</button>
+      <button class="btn alt" type="button" data-move="1" aria-label="Move down">↓</button>
+      <button class="btn danger" type="button" data-remove aria-label="Remove">✕</button>
+    </div>`;
+  $(kinds[kind].box).append(row);
+  return row;
+}
+function readRows(kind) {
+  return [...$(kinds[kind].box).children].map(row => {
+    const vals = Object.fromEntries([...row.querySelectorAll('[data-k]')].map(el => [el.dataset.k, el.value]));
+    return kind === 'log' ? vals.text : vals;
+  });
+}
+Object.keys(kinds).forEach(kind => {
+  const box = $(kinds[kind].box);
+  box.addEventListener('input', () => { dirty = true; });
+  box.addEventListener('click', e => {
+    const row = e.target.closest('.rep-row');
+    if (!row) return;
+    if (e.target.closest('[data-remove]')) { row.remove(); dirty = true; }
+    const move = e.target.closest('[data-move]');
+    if (move) {
+      const sib = move.dataset.move === '-1' ? row.previousElementSibling : row.nextElementSibling;
+      if (sib) { move.dataset.move === '-1' ? sib.before(row) : sib.after(row); dirty = true; }
+    }
+  });
+});
+$('a-add-spec').addEventListener('click', () => { addRow('specs').querySelector('input').focus(); dirty = true; });
+$('a-add-dir').addEventListener('click', () => { addRow('dirs').querySelector('input').focus(); dirty = true; });
+$('a-add-log').addEventListener('click', () => { addRow('log').querySelector('textarea').focus(); dirty = true; });
+Object.values(af).forEach(f => f.addEventListener('input', () => { dirty = true; }));
+
+function fillAbout(a) {
+  af.tagline.value = a.tagline ?? '';
+  af.heading.value = a.heading ?? '';
+  af.bio.value = a.bio ?? '';
+  af.signoffTitle.value = a.signoffTitle ?? '';
+  af.signoff.value = a.signoff ?? '';
+  setPhoto(a.photo ?? null);
+  Object.values(kinds).forEach(k => $(k.box).replaceChildren());
+  (a.specs ?? []).forEach(v => addRow('specs', v));
+  (a.directives ?? []).forEach(v => addRow('dirs', v));
+  (a.log ?? []).forEach(v => addRow('log', v));
+  $('a-status').textContent = a.updatedAt ? `Saved ${new Date(a.updatedAt).toLocaleString()}` : 'Showing the original text';
+  dirty = false;
+}
+
+async function openAbout() {
+  $('list-view').hidden = true;
+  $('edit-view').hidden = true;
+  $('about-view').hidden = false;
+  showAboutTab('write');
+  document.title = 'About page · taniacryptid';
+  $('a-status').textContent = 'Loading…';
+  try { fillAbout(await api('/api/pages/about')); }
+  catch (err) { showErr(err); }
+}
+
+function showAboutTab(which) {
+  const preview = which === 'preview';
+  $('a-tab-write').setAttribute('aria-selected', String(!preview));
+  $('a-tab-preview').setAttribute('aria-selected', String(preview));
+  af.bio.hidden = preview;
+  $('a-preview').hidden = !preview;
+  if (preview) $('a-preview').innerHTML = marked.parse(af.bio.value || '*Nothing written yet.*');
+}
+$('a-tab-write').addEventListener('click', () => showAboutTab('write'));
+$('a-tab-preview').addEventListener('click', () => showAboutTab('preview'));
+
+$('about-view').addEventListener('submit', async e => {
+  e.preventDefault();
+  const payload = {
+    tagline: af.tagline.value, heading: af.heading.value, bio: af.bio.value,
+    signoffTitle: af.signoffTitle.value, signoff: af.signoff.value, photo,
+    specs: readRows('specs'), directives: readRows('dirs'), log: readRows('log'),
+  };
+  $('a-save').disabled = true;
+  show('');
+  try {
+    fillAbout(await api('/api/pages/about', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }));
+    show('About page saved. It’s live now.', 'ok');
+  } catch (err) { showErr(err); }
+  finally { $('a-save').disabled = false; }
+});
+
+$('a-reset').addEventListener('click', async () => {
+  if (!confirm('Replace the About page with the original text? Your edits will be lost.')) return;
+  try {
+    fillAbout(await api('/api/pages/about/reset', { method: 'POST' }));
+    show('About page reset to the original text.', 'ok');
+  } catch (err) { showErr(err); }
+});
+
+$('a-photo-btn').addEventListener('click', () => { uploadTarget = 'photo'; $('file-in').click(); });
+$('a-photo-remove').addEventListener('click', () => { setPhoto(null); dirty = true; });
+
 // ---------- gate: admins only (runs last, once everything above is set up) ----------
 const user = await getUser();
 if (!user) location.replace('/login?next=/admin');

@@ -24,3 +24,9 @@
   from = "/admin"
   to = "/admin.html"
   status = 200
+
+# Type preview package: a design review area, kept out of search results
+[[headers]]
+  for = "/type-preview/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

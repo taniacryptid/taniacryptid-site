@@ -1,0 +1,75 @@
+/* Swap your Google Fonts link for this one:
+   https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400..800&family=Chakra+Petch:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Dela+Gothic+One&family=VT323&display=swap
+
+   Paste the rules below after your existing <style> block.
+   Shader tweaks (in the sky() function and skyline) are listed in README.md. */
+
+/* ===== taniacryptid type + color restyle: mustard on red ===== */
+  :root {
+    --bg: #8E0E16;          /* technicolor red, deepened for the page ground */
+    --bg2: #6a0a10;
+    --ink: #F4E6C1;         /* poster cream */
+    --muted: #F2D7B5;
+    --red: #FF3B3B;         /* cyborg red */
+    --mustard: #F2B705;
+    --teal: #5CFF8A;        /* phosphor */
+    --pink: #FF8A1F;        /* marquee orange */
+    --sky: #FFB3A0;         /* salmon */
+    --outline: #141014;     /* ink */
+    --c: #F2B705;
+    --grain: 0.22;
+  }
+  body { font-family: "Archivo", system-ui, sans-serif; background: var(--bg); }
+
+  .ticker { background: var(--outline); opacity: 1; color: #c9c3b0; border-bottom: 2px solid var(--mustard); }
+  .hero { background:
+      radial-gradient(ellipse 55% 65% at 0% 40%, rgba(179, 18, 27, 0.95), transparent 72%),
+      repeating-linear-gradient(0deg, rgba(20,16,20,0.08) 0 2px, transparent 2px 6px); }
+
+  .onair { font-family: "Chakra Petch", sans-serif; font-weight: 700; font-size: 18px;
+           letter-spacing: 0.16em; text-transform: uppercase; text-shadow: 0 0 8px var(--c); }
+  .live { box-shadow: 0 0 8px var(--c); }
+
+  h1 {
+    font-family: "Dela Gothic One", Impact, sans-serif; font-weight: 400;
+    text-transform: uppercase; letter-spacing: -0.02em;
+    font-size: clamp(38px, 6.2vw, 92px);
+    color: var(--mustard);
+    overflow-wrap: anywhere;
+    text-shadow: 1px 1px 0 #5c0810, 2px 2px 0 #5c0810, 3px 3px 0 #5c0810,
+                 4px 4px 0 #5c0810, 5px 5px 0 #5c0810, 8px 8px 0 var(--outline);
+  }
+  .tag { font-family: "Anton", Impact, sans-serif; text-transform: uppercase;
+         letter-spacing: 0.03em; line-height: 1.1; font-size: clamp(20px, 2vw, 28px); color: var(--ink); }
+
+  .guide a { border-radius: 6px; }
+  .ch { border-radius: 4px; }
+  .nm { font-family: "Anton", Impact, sans-serif; font-weight: 400; text-transform: uppercase;
+        letter-spacing: 0.03em; font-size: clamp(22px, 2.1vw, 30px); line-height: 1.05; }
+  .ds { color: var(--muted); }
+  .guide a.cur { box-shadow: 5px 5px 0 var(--outline); }
+  .guide a.cur .ds { font-weight: 600; }
+  .hint { color: var(--muted); }
+  .hint kbd { border-color: var(--muted); }
+
+  .blog h2 { font-family: "Anton", Impact, sans-serif; text-transform: uppercase; letter-spacing: 0.02em;
+             font-size: clamp(36px, 4.4vw, 56px); line-height: 1; color: var(--mustard);
+             text-shadow: 4px 4px 0 var(--outline); }
+  .empty {
+    border: none; border-top: 6px solid var(--outline); border-radius: 4px;
+    background: #FBF3DC repeating-linear-gradient(180deg, transparent 0 31px, #b9cbe0 31px 33px);
+    box-shadow: 8px 8px 0 var(--outline); color: var(--outline);
+  }
+  .empty p { font-family: "Courier Prime", "Courier New", monospace; line-height: 33px; }
+  .empty .osdline { font-family: "Chakra Petch", sans-serif; font-weight: 700; font-size: 16px;
+                    letter-spacing: 0.14em; text-transform: uppercase; color: #B3121B; }
+  .all, .more { color: var(--mustard); }
+  .card { background: var(--outline); border-color: var(--outline); border-radius: 6px; }
+  .card:hover { box-shadow: 8px 8px 0 var(--mustard); }
+  .card-cover { background: var(--bg2); }
+  .card h3 { font-family: "Anton", Impact, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.02em; }
+  .card h3 a:hover { text-decoration-color: var(--mustard); }
+  .cat { border-color: var(--mustard); color: var(--mustard); }
+  .date { color: var(--teal); }
+  .excerpt { color: #c9c3b0; }
+  footer, footer a { color: var(--muted); }
