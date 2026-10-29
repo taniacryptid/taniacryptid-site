@@ -1,0 +1,525 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tania Cryptid — Typography Style Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400..800&amp;family=Dela+Gothic+One&amp;family=Share+Tech+Mono&amp;family=VT323&amp;display=swap">
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:#0d1236;color:#F4E6C1;font:17px/1.6 Archivo,system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:56px 24px 96px}
+h1{font:400 clamp(36px,6vw,64px)/1 "Dela Gothic One",Impact,sans-serif;color:#F2B705;text-transform:uppercase;text-shadow:5px 5px 0 #B3121B;margin:0 0 12px}
+h2{font:400 clamp(28px,4vw,44px)/1 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#F2B705;margin:56px 0 16px;padding-top:16px;border-top:2px solid #2a3170}
+a{color:#F2B705} strong{color:#fff3d6}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0;display:block;overflow-x:auto}
+th{text-align:left;font:16px VT323,monospace;letter-spacing:.06em;text-transform:uppercase;color:#5CFF8A;border-bottom:2px solid #2a3170;padding:8px 10px}
+td{border-bottom:1px solid #1f2560;padding:8px 10px;vertical-align:top}
+pre{background:#141014;border:1px solid #2a3170;border-radius:6px;padding:16px;overflow-x:auto}
+code{font:14px/1.5 "Share Tech Mono",monospace}
+</style></head><body><main><h1>Tania Cryptid — Typography Style Guide</h1>
+<p>Oct 28, 2026 · @Tania Chakraborty</p>
+<h2>Brand mood</h2>
+<p>taniacryptid type should feel like a late-night double feature on channel 3: a kaiju poster on the marquee, an action-movie title slammed across the screen, and a killer-robot HUD readout in the corner.</p>
+<ul>
+<li><strong>Kaiju poster:</strong> heavy, blocky letters with Japanese-poster energy, printed mustard on red.</li>
+<li><strong>80s action title:</strong> tall, condensed, all-caps type with chrome or a hard drop shadow.</li>
+<li><strong>Cyborg HUD / CRT:</strong> monospaced, scanline-friendly readouts — matches the site's existing ON AIR, NOW SHOWING and CH 03 broadcast language and CRT Buddy.</li>
+<li><strong>Technicolor print:</strong> saturated, slightly warm color with flat fills and offset shadows, like misregistered poster ink.</li>
+</ul>
+<p>The site already uses a broadcast metaphor and a deep navy theme color (#0d1236). This guide keeps both and adds the poster layer on top, so it can flex as the site keeps changing.</p>
+<h2>The system at a glance</h2>
+<p>Six roles, each with one job. Display and Action carry the personality; Body stays calm so the loud stuff reads as loud.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Font</th>
+<th>Job</th>
+<th>Where it shows up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marquee</td>
+<td>Dela Gothic One</td>
+<td>The kaiju poster voice</td>
+<td>Site name, hero titles, one word per screen</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Anton</td>
+<td>The 80s action-title voice</td>
+<td>Section headings (BLOG, PROJECTS), big callouts</td>
+</tr>
+<tr>
+<td>Steel</td>
+<td>Michroma</td>
+<td>Wide, steel-plate cyborg lettering</td>
+<td>CLASSIFIED badges, warnings, stamped labels — sparingly</td>
+</tr>
+<tr>
+<td>Signal</td>
+<td>Chakra Petch (labels) + VT323 (screen text)</td>
+<td>Cyborg targeting HUD and CRT readout</td>
+<td>ON AIR, NOW SHOWING, channel labels; VT323 for CRT Buddy UI and tickers</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>Archivo</td>
+<td>Readable, warm, a little condensed</td>
+<td>Main paragraphs, captions, buttons</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Courier Prime + Caveat</td>
+<td>The paper layer</td>
+<td>Notes, logs, index cards; Caveat only for short scribbles</td>
+</tr>
+</tbody>
+</table>
+<p>Code blocks use Share Tech Mono so they stay crisp at small sizes, where VT323 gets fuzzy.</p>
+<h2>Font picks and alternates</h2>
+<p>Every font here is free on Google Fonts, so it loads on Netlify with one link tag and no licensing worries.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Primary</th>
+<th>Why it fits</th>
+<th>Swap in for a different mood</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marquee</td>
+<td><a href="https://fonts.google.com/specimen/Dela+Gothic+One">Dela Gothic One</a></td>
+<td>Ultra-heavy Japanese poster face; includes katakana, so you can set タニア next to TANIA</td>
+<td><a href="https://fonts.google.com/specimen/Bungee">Bungee</a> for a neon-sign marquee; <a href="https://fonts.google.com/specimen/Rubik+Mono+One">Rubik Mono One</a> for flatter 90s blocks</td>
+</tr>
+<tr>
+<td>Action</td>
+<td><a href="https://fonts.google.com/specimen/Anton">Anton</a></td>
+<td>Tall, condensed, all-caps — the shape of a sequel title</td>
+<td><a href="https://fonts.google.com/specimen/Bebas+Neue">Bebas Neue</a> lighter; <a href="https://fonts.google.com/specimen/Big+Shoulders+Display">Big Shoulders Display</a> with a Black weight for more muscle</td>
+</tr>
+<tr>
+<td>Steel</td>
+<td><a href="https://fonts.google.com/specimen/Michroma">Michroma</a></td>
+<td>Very wide and stretched, like lettering stamped into a steel plate</td>
+<td><a href="https://fonts.google.com/specimen/Orbitron">Orbitron</a> sleeker chrome sci-fi; <a href="https://fonts.google.com/specimen/Russo+One">Russo One</a> chunkier military</td>
+</tr>
+<tr>
+<td>Signal labels</td>
+<td><a href="https://fonts.google.com/specimen/Chakra+Petch">Chakra Petch</a></td>
+<td>Cut-off corners read as a robot's targeting display</td>
+<td><a href="https://fonts.google.com/specimen/Oxanium">Oxanium</a> rounder; <a href="https://fonts.google.com/specimen/Audiowide">Audiowide</a> more arcade</td>
+</tr>
+<tr>
+<td>Signal screen</td>
+<td><a href="https://fonts.google.com/specimen/VT323">VT323</a></td>
+<td>Real terminal bitmap look; pairs with CRT Buddy's chunky pixels</td>
+<td><a href="https://fonts.google.com/specimen/Share+Tech+Mono">Share Tech Mono</a> for a cold, clean HUD</td>
+</tr>
+<tr>
+<td>Body</td>
+<td><a href="https://fonts.google.com/specimen/Archivo">Archivo</a></td>
+<td>Variable width axis: normal for reading, condensed to echo Anton</td>
+<td><a href="https://fonts.google.com/specimen/Space+Grotesk">Space Grotesk</a> quirkier; <a href="https://fonts.google.com/specimen/IBM+Plex+Sans">IBM Plex Sans</a> more technical</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td><a href="https://fonts.google.com/specimen/Courier+Prime">Courier Prime</a></td>
+<td>A typewriter face redrawn for screens; readable in long notes</td>
+<td><a href="https://fonts.google.com/specimen/Special+Elite">Special Elite</a> worn and smudgy, for stamped labels only</td>
+</tr>
+<tr>
+<td>Scribbles</td>
+<td><a href="https://fonts.google.com/specimen/Caveat">Caveat</a></td>
+<td>Quick handwriting for margin notes and arrows</td>
+<td><a href="https://fonts.google.com/specimen/Kalam">Kalam</a> neater; <a href="https://fonts.google.com/specimen/Permanent+Marker">Permanent Marker</a> for Sharpie energy</td>
+</tr>
+<tr>
+<td>Code</td>
+<td><a href="https://fonts.google.com/specimen/Share+Tech+Mono">Share Tech Mono</a></td>
+<td>Sharp, narrow, readable at 14px</td>
+<td><a href="https://fonts.google.com/specimen/Space+Mono">Space Mono</a> for a rounder retro feel</td>
+</tr>
+</tbody>
+</table>
+<p>When the site changes direction, swap one row at a time. Changing Marquee alone shifts the whole mood; Body should rarely change.</p>
+<h2>Type scale</h2>
+<p>Sizes use clamp() so they shrink on phones and grow on wide screens; the range below is min → max. Base body size is 18px.</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Font</th>
+<th>Size (px)</th>
+<th>Weight</th>
+<th>Case</th>
+<th>Letter-spacing</th>
+<th>Line-height</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--t-marquee</td>
+<td>Dela Gothic One</td>
+<td>56 → 144</td>
+<td>400 (only weight)</td>
+<td>UPPER</td>
+<td>-0.02em</td>
+<td>0.9</td>
+</tr>
+<tr>
+<td>--t-h1</td>
+<td>Anton</td>
+<td>44 → 88</td>
+<td>400</td>
+<td>UPPER</td>
+<td>0.01em</td>
+<td>0.95</td>
+</tr>
+<tr>
+<td>--t-h2</td>
+<td>Anton</td>
+<td>32 → 56</td>
+<td>400</td>
+<td>UPPER</td>
+<td>0.02em</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>--t-h3</td>
+<td>Archivo, condensed</td>
+<td>22 → 28</td>
+<td>800</td>
+<td>Title</td>
+<td>0</td>
+<td>1.15</td>
+</tr>
+<tr>
+<td>--t-steel</td>
+<td>Michroma</td>
+<td>14 → 22</td>
+<td>400 (only weight)</td>
+<td>UPPER</td>
+<td>0.15em</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>--t-label</td>
+<td>Chakra Petch</td>
+<td>16 → 28</td>
+<td>600</td>
+<td>UPPER</td>
+<td>0.12em</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>--t-signal</td>
+<td>VT323</td>
+<td>20 → 28</td>
+<td>400</td>
+<td>UPPER</td>
+<td>0.06em</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>--t-body</td>
+<td>Archivo</td>
+<td>17 → 19</td>
+<td>400</td>
+<td>Sentence</td>
+<td>0</td>
+<td>1.6</td>
+</tr>
+<tr>
+<td>--t-note</td>
+<td>Courier Prime</td>
+<td>16 → 18</td>
+<td>400 / 700</td>
+<td>Sentence</td>
+<td>0</td>
+<td>1.6</td>
+</tr>
+<tr>
+<td>--t-scribble</td>
+<td>Caveat</td>
+<td>22 → 28</td>
+<td>500 / 700</td>
+<td>As written</td>
+<td>0</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>--t-small</td>
+<td>Archivo</td>
+<td>14 → 15</td>
+<td>500</td>
+<td>Sentence</td>
+<td>0.01em</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>--t-code</td>
+<td>Share Tech Mono</td>
+<td>14 → 16</td>
+<td>400</td>
+<td>As typed</td>
+<td>0</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+<p>VT323 renders small for its point size, so it runs about 1.4× the size of the text beside it. Keep body lines at 60–75 characters (max-width: 68ch).</p>
+<h2>Treatments and color pairings</h2>
+<p>Mustard on red is the signature, and it passes contrast for big type only (about 3.8:1), so it belongs to Marquee, Action and Steel — never to paragraphs.</p>
+<table>
+<thead>
+<tr>
+<th>Swatch</th>
+<th>Hex</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Technicolor Red</td>
+<td>#B3121B</td>
+<td>Poster backgrounds, hero bands</td>
+</tr>
+<tr>
+<td>Mustard</td>
+<td>#F2B705</td>
+<td>Display type on red or navy; highlights</td>
+</tr>
+<tr>
+<td>Poster Cream</td>
+<td>#F4E6C1</td>
+<td>Body text on dark; paper-texture backgrounds</td>
+</tr>
+<tr>
+<td>Channel Navy</td>
+<td>#0d1236</td>
+<td>The site's existing theme color; default page background</td>
+</tr>
+<tr>
+<td>Ink</td>
+<td>#141014</td>
+<td>Drop shadows, outlines, body text on cream</td>
+</tr>
+<tr>
+<td>Cyborg Red</td>
+<td>#FF3B3B</td>
+<td>Chakra Petch labels (ON AIR, NOW SHOWING), with a soft glow</td>
+</tr>
+<tr>
+<td>Phosphor Green</td>
+<td>#5CFF8A</td>
+<td>VT323 screen text only, echoing CRT glow</td>
+</tr>
+<tr>
+<td>Index Card</td>
+<td>#FBF3DC, lines #b9cbe0</td>
+<td>Notes in Courier Prime</td>
+</tr>
+<tr>
+<td>Legal Pad</td>
+<td>#F7E9A6, lines #c9b766</td>
+<td>Scribbles in Caveat</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Pairing</th>
+<th>Text on background</th>
+<th>Allowed for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poster</td>
+<td>Mustard on Red</td>
+<td>Marquee, H1, H2, steel badges</td>
+</tr>
+<tr>
+<td>Night broadcast</td>
+<td>Cream on Navy</td>
+<td>Everything, including body (about 14:1)</td>
+</tr>
+<tr>
+<td>Paperback</td>
+<td>Ink on Index Card or Cream</td>
+<td>Notes, long reads, blog posts</td>
+</tr>
+<tr>
+<td>Cyborg vision</td>
+<td>Cyborg Red on Navy or Ink</td>
+<td>Chakra Petch labels</td>
+</tr>
+<tr>
+<td>HUD</td>
+<td>Phosphor Green on Navy or Ink</td>
+<td>VT323 screen text, tickers</td>
+</tr>
+</tbody>
+</table>
+<p>Three signature effects, used on display type only:</p>
+<ol>
+<li><strong>Misprint shadow:</strong> a hard offset shadow in Ink, 4–8px down-right, no blur — the poster-ink look.</li>
+<li><strong>Extruded block:</strong> stacked shadows (1px, 2px … 6px) in a darker red for a 3D title-card feel.</li>
+<li><strong>Chrome/heat glow:</strong> a mustard-to-cream vertical gradient clipped to the text, with a faint red outer glow — save for one hero moment per page.</li>
+</ol>
+<p>Signal text gets a 0–2px phosphor glow and can sit under CRT Buddy's scanlines; no other text should.</p>
+<h2>Do and don't</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Don't</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One Marquee moment per screen — it's the monster, let it stomp</td>
+<td>Stack Marquee, Anton and Steel in the same block</td>
+</tr>
+<tr>
+<td>Set Action headings in all caps with tight leading</td>
+<td>Use Anton for sentences longer than about six words</td>
+</tr>
+<tr>
+<td>Use Steel like a stamped plate: badges, warnings, one or two words</td>
+<td>Set paragraphs, buttons or nav in Michroma</td>
+</tr>
+<tr>
+<td>Keep broadcast labels (ON AIR, NOW SHOWING) in Chakra Petch red</td>
+<td>Mix Cyborg Red and Phosphor Green in the same line</td>
+</tr>
+<tr>
+<td>Keep CRT Buddy's screen text and tickers in VT323</td>
+<td>Put body text under scanlines or glow</td>
+</tr>
+<tr>
+<td>Put notes and logs on paper in Courier Prime</td>
+<td>Turn the whole site into paper — it's a layer, not the page</td>
+</tr>
+<tr>
+<td>Use Caveat for a few words of scribble</td>
+<td>Write full sentences people must read in Caveat</td>
+</tr>
+<tr>
+<td>Keep main body text in Archivo on navy or cream</td>
+<td>Put body text in mustard on red</td>
+</tr>
+<tr>
+<td>Make your own homage title cards in these fonts</td>
+<td>Copy actual film logos or posters — riff on the era, not the trademark</td>
+</tr>
+<tr>
+<td>Add katakana with Dela Gothic One as decoration next to an English word</td>
+<td>Use katakana as the only label for anything people need to read</td>
+</tr>
+</tbody>
+</table>
+<h2>Drop-in CSS</h2>
+<p>Paste the link into your page head and the CSS into your stylesheet; every class maps to a row in the type scale above.</p>
+<pre><code class="language-html">&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;
+&lt;link href=&quot;https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wdth,wght@75..100,400..800&amp;family=Caveat:wght@500;700&amp;family=Chakra+Petch:wght@500;600;700&amp;family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Dela+Gothic+One&amp;family=Michroma&amp;family=Share+Tech+Mono&amp;family=VT323&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+</code></pre>
+<pre><code class="language-css">:root {
+  /* fonts */
+  --f-marquee:  &quot;Dela Gothic One&quot;, &quot;Arial Black&quot;, Impact, sans-serif;
+  --f-action:   &quot;Anton&quot;, Impact, &quot;Arial Narrow&quot;, sans-serif;
+  --f-steel:    &quot;Michroma&quot;, &quot;Arial Black&quot;, sans-serif;
+  --f-label:    &quot;Chakra Petch&quot;, &quot;Arial Narrow&quot;, sans-serif;
+  --f-signal:   &quot;VT323&quot;, &quot;Courier New&quot;, monospace;
+  --f-body:     &quot;Archivo&quot;, system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif;
+  --f-note:     &quot;Courier Prime&quot;, &quot;Courier New&quot;, monospace;
+  --f-scribble: &quot;Caveat&quot;, &quot;Brush Script MT&quot;, cursive;
+  --f-code:     &quot;Share Tech Mono&quot;, ui-monospace, Menlo, monospace;
+
+  /* colors */
+  --red: #B3121B;  --mustard: #F2B705;  --cream: #F4E6C1;
+  --navy: #0d1236; --ink: #141014;      --phosphor: #5CFF8A;
+  --cyborg: #FF3B3B; --card: #FBF3DC;   --rule: #b9cbe0;
+}
+
+body {
+  font-family: var(--f-body);
+  font-size: clamp(17px, 1rem + 0.2vw, 19px);
+  line-height: 1.6;
+  color: var(--cream);
+  background: var(--navy);
+}
+p { max-width: 68ch; }
+
+.t-marquee {
+  font-family: var(--f-marquee);
+  font-size: clamp(56px, 10vw, 144px);
+  line-height: 0.9; letter-spacing: -0.02em; text-transform: uppercase;
+  color: var(--mustard);
+  text-shadow: 6px 6px 0 var(--ink); /* misprint shadow */
+}
+h1, .t-h1 {
+  font-family: var(--f-action);
+  font-size: clamp(44px, 6vw, 88px);
+  line-height: 0.95; letter-spacing: 0.01em; text-transform: uppercase;
+}
+h2, .t-h2 {
+  font-family: var(--f-action);
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1; letter-spacing: 0.02em; text-transform: uppercase;
+}
+h3, .t-h3 {
+  font-family: var(--f-body);
+  font-stretch: 75%; font-weight: 800;
+  font-size: clamp(22px, 2vw, 28px); line-height: 1.15;
+}
+.t-steel {
+  font-family: var(--f-steel);
+  font-size: clamp(14px, 1.4vw, 22px);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+.t-label {
+  font-family: var(--f-label); font-weight: 600;
+  font-size: clamp(16px, 1.6vw, 28px);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--cyborg);
+  text-shadow: 0 0 8px var(--cyborg);
+}
+.t-signal {
+  font-family: var(--f-signal);
+  font-size: clamp(20px, 1.8vw, 28px);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--phosphor);
+  text-shadow: 0 0 2px var(--phosphor);
+}
+code, pre { font-family: var(--f-code); font-size: 15px; }
+
+/* paper layer */
+.note {
+  font-family: var(--f-note); color: var(--ink);
+  line-height: 1.6;
+  background: repeating-linear-gradient(180deg, var(--card) 0 calc(1.6em - 2px), var(--rule) calc(1.6em - 2px) 1.6em);
+  border-top: 6px solid var(--red);
+  padding: 1.6em 1.5em;
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.scribble { font-family: var(--f-scribble); font-weight: 700; color: var(--red); }
+
+/* effects */
+.fx-extrude {
+  text-shadow: 1px 1px 0 #7a0c12, 2px 2px 0 #7a0c12, 3px 3px 0 #7a0c12,
+               4px 4px 0 #7a0c12, 5px 5px 0 #7a0c12, 6px 6px 0 var(--ink);
+}
+.fx-chrome {
+  background: linear-gradient(180deg, var(--cream) 0%, var(--mustard) 55%, #c98a00 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 12px rgba(179, 18, 27, 0.6));
+}
+.poster { background: var(--red); color: var(--mustard); }
+</code></pre>
+<p>Usage: <code>&lt;h1 class="t-marquee fx-extrude"&gt;taniacryptid&lt;/h1&gt;</code> inside a <code>.poster</code> band gives the full mustard-on-red kaiju title.</p></main></body></html>

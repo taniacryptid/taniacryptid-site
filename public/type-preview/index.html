@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Type preview · taniacryptid</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d1236">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400..800&family=Chakra+Petch:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Dela+Gothic+One&family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<style>
+  /* Side-by-side explorer for the type options in the taniacryptid type preview package.
+     Each option is a set of CSS variables applied to the same mock homepage. */
+  :root {
+    color-scheme: dark;
+    --navy: #0d1236; --ink: #141014; --cream: #f4e6c1; --mustard: #f2b705; --muted: #a7a3d6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--navy); color: var(--cream); font: 17px/1.6 "Archivo", system-ui, sans-serif; }
+  a { color: var(--mustard); }
+  :focus-visible { outline: 3px solid var(--mustard); outline-offset: 3px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 6vw 72px; }
+  .top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px; }
+  .top a { font-family: "VT323", monospace; font-size: 22px; text-decoration: none; color: var(--muted); }
+  .top a:hover { color: var(--cream); }
+  .kicker { margin: 40px 0 0; font: 700 15px "Chakra Petch", sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #ff3b3b; }
+  h1 { margin: 6px 0 12px; font: 400 clamp(44px, 7vw, 84px)/.95 "Anton", Impact, sans-serif; text-transform: uppercase; color: var(--mustard); text-shadow: 5px 5px 0 var(--ink); }
+  h2 { margin: 56px 0 8px; font: 400 clamp(30px, 4vw, 44px)/1 "Anton", Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+  p { max-width: 68ch; }
+
+  /* option picker */
+  .picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 24px 0 18px; padding: 0; border: 0; }
+  .picker legend { font: 700 14px "Chakra Petch", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .picker label { display: block; cursor: pointer; padding: 12px 14px; border: 2px solid rgba(167,163,214,.3); border-radius: 6px; }
+  .picker label:has(input:checked) { border-color: var(--mustard); box-shadow: 5px 5px 0 var(--ink); }
+  .picker input { accent-color: var(--mustard); margin: 0 6px 0 0; }
+  .picker b { font-weight: 700; }
+  .picker small { display: block; color: var(--muted); font-size: 14px; line-height: 1.4; margin-top: 4px; }
+
+  /* the mock homepage that each option restyles */
+  .mock {
+    --bg: #0a0d2c; --fg: #f5e9d0; --sub: #a7a3d6; --accent: #ffc23d; --label: #ff5a3c; --card: #12164a; --cardfg: #f5e9d0;
+    --f-title: "Shrikhand", Georgia, serif; --title-case: none; --title-shadow: 4px 4px 0 #ff5a3c; --title-color: var(--fg);
+    --f-head: "Shrikhand", Georgia, serif; --head-case: none;
+    --f-label: "VT323", monospace; --label-size: 22px; --label-track: 0;
+    --f-body: "Instrument Sans", system-ui, sans-serif;
+    --f-note: "Instrument Sans", system-ui, sans-serif; --note-bg: #12164a; --note-fg: #f5e9d0;
+    border-radius: 10px; overflow: hidden; background: var(--bg); color: var(--fg); font-family: var(--f-body);
+    border: 2px solid rgba(167,163,214,.25); transition: background .3s;
+  }
+  .mock .hero { padding: 36px 32px 30px; }
+  .mock .on { margin: 0; font-family: var(--f-label); font-size: var(--label-size); letter-spacing: var(--label-track); text-transform: uppercase; color: var(--label); font-weight: 700; }
+  .mock .t { margin: 6px 0 8px; font-family: var(--f-title); font-weight: 400; font-size: clamp(38px, 7vw, 80px); line-height: .95; text-transform: var(--title-case); color: var(--title-color); text-shadow: var(--title-shadow); overflow-wrap: anywhere; letter-spacing: -.01em; }
+  .mock .tag { margin: 0 0 20px; font-family: var(--f-head); font-size: clamp(18px, 2vw, 26px); text-transform: var(--head-case); }
+  .mock .chans { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .mock .chans li { font-family: var(--f-head); text-transform: var(--head-case); font-size: 20px; padding: 4px 12px; border-radius: 4px; background: rgba(0,0,0,.25); }
+  .mock .chans li:first-child { background: var(--accent); color: #141014; }
+  .mock .chans span { font-family: var(--f-label); font-size: 17px; margin-right: 8px; opacity: .8; }
+  .mock .below { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 26px 32px 32px; background: rgba(0,0,0,.18); }
+  .mock h3 { margin: 0 0 12px; font-family: var(--f-head); font-weight: 400; font-size: 32px; line-height: 1; text-transform: var(--head-case); color: var(--accent); }
+  .mock .card { background: var(--card); color: var(--cardfg); border-radius: 6px; padding: 16px 18px; }
+  .mock .card .d { font-family: var(--f-label); font-size: 18px; color: var(--label); text-transform: uppercase; letter-spacing: var(--label-track); }
+  .mock .card h4 { margin: 4px 0 6px; font-family: var(--f-head); font-weight: 400; font-size: 24px; line-height: 1.05; text-transform: var(--head-case); }
+  .mock .card p { margin: 0; font-size: 15px; color: var(--sub); }
+  .mock .note { background: var(--note-bg); color: var(--note-fg); font-family: var(--f-note); padding: 16px 18px; border-radius: 4px; font-size: 15px; line-height: 1.6; }
+  .mock .note p { margin: 0; }
+  .mock .note .l { font-family: var(--f-label); font-size: 15px; letter-spacing: var(--label-track); text-transform: uppercase; color: #b3121b; font-weight: 700; margin-bottom: 4px; }
+
+  /* B: new type, existing navy */
+  .mock[data-opt="type"] {
+    --fg: #f4e6c1; --sub: #c9c3d6; --accent: #f2b705; --label: #ff3b3b;
+    --f-title: "Dela Gothic One", Impact, sans-serif; --title-case: uppercase; --title-color: #f2b705; --title-shadow: 6px 6px 0 #141014;
+    --f-head: "Anton", Impact, sans-serif; --head-case: uppercase;
+    --f-label: "Chakra Petch", sans-serif; --label-size: 16px; --label-track: .14em;
+    --f-body: "Archivo", system-ui, sans-serif;
+    --f-note: "Courier Prime", "Courier New", monospace; --note-bg: #fbf3dc; --note-fg: #141014;
+  }
+  /* C: full mustard-on-red restyle (homepage-restyle.css) */
+  .mock[data-opt="red"] {
+    --bg: #8e0e16; --fg: #f4e6c1; --sub: #c9c3b0; --accent: #f2b705; --label: #f2b705; --card: #141014; --cardfg: #f4e6c1;
+    --f-title: "Dela Gothic One", Impact, sans-serif; --title-case: uppercase; --title-color: #f2b705;
+    --title-shadow: 1px 1px 0 #5c0810, 2px 2px 0 #5c0810, 3px 3px 0 #5c0810, 4px 4px 0 #5c0810, 5px 5px 0 #5c0810, 8px 8px 0 #141014;
+    --f-head: "Anton", Impact, sans-serif; --head-case: uppercase;
+    --f-label: "Chakra Petch", sans-serif; --label-size: 16px; --label-track: .14em;
+    --f-body: "Archivo", system-ui, sans-serif;
+    --f-note: "Courier Prime", "Courier New", monospace; --note-bg: #fbf3dc; --note-fg: #141014;
+  }
+  /* D: machine vision (the About page) */
+  .mock[data-opt="t2"] {
+    --bg: radial-gradient(120% 90% at 30% 40%, #8e0f12 0%, #4a0709 55%, #1a0506 100%); --fg: #ffd9d2; --sub: #e9c9bf;
+    --accent: #f2b705; --label: #ff3b3b; --card: rgba(20,16,20,.7); --cardfg: #f4e6c1;
+    --f-title: "Anton", Impact, sans-serif; --title-case: uppercase; --title-color: #e8eef4; --title-shadow: 0 6px 0 rgba(0,0,0,.45);
+    --f-head: "Anton", Impact, sans-serif; --head-case: uppercase;
+    --f-label: "VT323", monospace; --label-size: 22px; --label-track: .06em;
+    --f-body: "Archivo", system-ui, sans-serif;
+    --f-note: "Courier Prime", "Courier New", monospace; --note-bg: #fbf3dc; --note-fg: #141014;
+  }
+  .mock[data-opt="t2"] .t { background: linear-gradient(176deg,#fff 0%,#9fb3c8 30%,#26323f 48%,#e8eef4 52%,#9fb3c8 70%,#fff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .why { margin-top: 16px; padding: 14px 18px; border-left: 4px solid var(--mustard); background: rgba(255,255,255,.04); }
+  .why p { margin: 0; }
+
+  .files { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 18px; }
+  .files a { display: block; text-decoration: none; color: var(--cream); padding: 16px 18px; border-radius: 6px; background: #141014; border: 2px solid #141014; }
+  .files a:hover { border-color: var(--mustard); box-shadow: 6px 6px 0 var(--mustard); }
+  .files b { display: block; font: 400 24px/1.05 "Anton", Impact, sans-serif; text-transform: uppercase; color: var(--mustard); margin-bottom: 4px; }
+  .files span { font-size: 15px; color: #c9c3b0; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid rgba(167,163,214,.2); vertical-align: top; }
+  th { font: 700 13px "Chakra Petch", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .tbl { overflow-x: auto; }
+
+  @media (max-width: 640px) {
+    .mock .below { grid-template-columns: 1fr; }
+    .mock .hero, .mock .below { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a href="/">← taniacryptid</a>
+    <a href="/about">About page →</a>
+  </div>
+
+  <p class="kicker">Type test pattern · CH 03</p>
+  <h1>Type preview</h1>
+  <p>Four directions for the site's text, drawn from the type preview package. Pick one below to see it applied to the same slice of the homepage. Nothing on the live homepage changes until you choose.</p>
+
+  <fieldset class="picker" id="picker">
+    <legend>Pick an option</legend>
+    <label><input type="radio" name="opt" value="now" checked><b>A · Current</b><small>Shrikhand titles, Instrument Sans body, VT323 labels on navy.</small></label>
+    <label><input type="radio" name="opt" value="type"><b>B · New type, navy</b><small>The type guide's fonts, keeping the existing navy and colors.</small></label>
+    <label><input type="radio" name="opt" value="red"><b>C · Mustard on red</b><small>The full kaiju-poster restyle from the package.</small></label>
+    <label><input type="radio" name="opt" value="t2"><b>D · Machine vision</b><small>The About page look: chrome titles, red HUD, VT323 readouts.</small></label>
+  </fieldset>
+
+  <div class="mock" id="mock" data-opt="now" aria-live="polite">
+    <div class="hero">
+      <p class="on">● Now playing</p>
+      <p class="t">taniacryptid</p>
+      <p class="tag">community builder and fan of stories</p>
+      <ul class="chans">
+        <li><span>01</span>blog</li><li><span>02</span>about</li><li><span>03</span>community</li><li><span>04</span>livestreams</li><li><span>05</span>contact</li>
+      </ul>
+    </div>
+    <div class="below">
+      <div>
+        <h3>From the blog</h3>
+        <div class="card">
+          <div class="d">Oct 28 · Stories</div>
+          <h4>The late, late creature feature</h4>
+          <p>Notes on why old monster movies still hit, and the ones worth staying up for.</p>
+        </div>
+      </div>
+      <div class="note">
+        <p class="l">CH 01 / signal pending</p>
+        <p>No posts yet. The first one airs soon.</p>
+      </div>
+    </div>
+  </div>
+  <div class="why"><p id="why"></p></div>
+
+  <h2>Recommendation</h2>
+  <p>Option B is the lowest-risk upgrade: it brings in the new type system across the homepage, blog and admin pages while keeping the navy theme the site is built around. Option C is the boldest and changes the whole homepage mood, including the CRT Buddy sky shader. Option D works best as a one-off for special pages like About rather than the whole site. A good path is B site-wide, with D kept for About.</p>
+
+  <h2>Where each role would land</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Role</th><th>Font</th><th>On this site</th></tr></thead>
+      <tbody>
+        <tr><td>Marquee</td><td>Dela Gothic One</td><td>The homepage "taniacryptid" title and the タニア kana</td></tr>
+        <tr><td>Action</td><td>Anton</td><td>Channel names in the guide, "From the blog", blog post titles, page headings</td></tr>
+        <tr><td>Signal labels</td><td>Chakra Petch</td><td>NOW PLAYING, the on-screen channel display, dates and category chips</td></tr>
+        <tr><td>Signal screen</td><td>VT323</td><td>The ticker strip and CRT Buddy's screen text (already in use)</td></tr>
+        <tr><td>Body</td><td>Archivo</td><td>Paragraphs, post bodies, buttons, the admin forms</td></tr>
+        <tr><td>Notes</td><td>Courier Prime</td><td>The "no posts yet" card and any notes or logs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>From the package</h2>
+  <div class="files">
+    <a href="/type-preview/slides"><b>Type preview deck</b><span>Ten slides on mood, roles, scale and effects. Use arrow keys to flip.</span></a>
+    <a href="/type-preview/style-guide"><b>Style guide</b><span>Fonts, type scale, color pairings, do's and don'ts, and drop-in CSS.</span></a>
+    <a href="/type-preview/homepage-restyle"><b>Homepage restyle</b><span>Option C on a copy of the real homepage, with live CRT Buddy and blog posts.</span></a>
+    <a href="/type-preview/homepage-restyle.css"><b>Restyle CSS</b><span>Just the rules for option C, ready to paste in.</span></a>
+  </div>
+</div>
+
+<script>
+  const notes = {
+    now: 'The current look: friendly retro script for titles and a soft sans for reading. Warm, but every heading sounds the same.',
+    type: 'Same navy channel, louder poster type. Titles stomp, labels read like a broadcast HUD, and the empty-blog card becomes a typed note. Body text stays easy to read.',
+    red: 'The whole page turns into a kaiju poster: mustard on technicolor red with extruded titles. Very on-theme, but it is a full rebrand and needs the CRT Buddy sky retuned to match.',
+    t2: 'Chrome action-movie titles over red machine vision. Great for a single themed page like About; heavy for every page.',
+  };
+  const mock = document.getElementById('mock'), why = document.getElementById('why');
+  const set = v => { mock.dataset.opt = v; why.textContent = notes[v]; };
+  document.getElementById('picker').addEventListener('change', e => set(e.target.value));
+  set('now');
+</script>
+</body>
+</html>

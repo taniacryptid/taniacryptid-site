@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const posts = pgTable("posts", {
   id: serial().primaryKey(),
@@ -15,3 +15,12 @@ export const posts = pgTable("posts", {
 });
 
 export type Post = typeof posts.$inferSelect;
+
+// Editable site pages (e.g. "about"). Content is a JSON document whose shape depends on the page.
+export const pages = pgTable("pages", {
+  slug: text().primaryKey(),
+  content: jsonb().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Page = typeof pages.$inferSelect;
