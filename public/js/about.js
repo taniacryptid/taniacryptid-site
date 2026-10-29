@@ -5,7 +5,7 @@
   const lines = [
     { t: 'SCAN: VISITOR' },
     { t: 'ORIGIN: THE INTERNET' },
-    { t: 'MATCH: FELLOW STORY FAN  98.6%' },
+    { t: 'MATCH: FELLOW GODZILLA FAN  98.6%' },
     { t: 'THREAT ASSESSMENT: NONE' },
     { t: '' },
     { t: 'RESPONSE OPTIONS:' },
