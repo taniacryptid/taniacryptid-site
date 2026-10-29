@@ -328,7 +328,7 @@ vec3 bodyXform(vec3 p) {
 }
 
 // returns (distance, material, object-only distance)
-// mats: 1 casing, 2 screen, 3 button, 5 horn/claw, 6 feet, 7 LED, 8 floor
+// mats: 1 casing, 2 screen, 3 button, 5 horn/claw, 6 feet, 7 LED, 8 street
 vec3 mapS(vec3 pw) {
   float t = uTime;
   float dFloor = pw.y - FLOOR_Y;
@@ -580,12 +580,47 @@ vec3 screenAt(vec2 su) {
   return pow(c, vec3(2.2));
 }
 
-// deep, cool sky with a technicolor horizon and rising embers
+// deep, cool sky: twinkling stars, a striped retro sunset, a kaiju-sized city skyline and rising embers
 vec3 sky(vec3 rd) {
   vec3 col = mix(vec3(0.42, 0.04, 0.22), vec3(0.03, 0.02, 0.16), smoothstep(-0.04, 0.14, rd.y));
   col = mix(col, vec3(0.002, 0.003, 0.03), smoothstep(0.12, 0.5, rd.y));
   col += vec3(1.0, 0.4, 0.1) * pow(max(0.0, 1.0 - abs(rd.y + 0.01) * 9.0), 4.0) * 0.45;
   float a = atan(rd.x, -rd.z);
+
+  // stars, twinkling at their own pace
+  vec2 sg = vec2(a * 70.0, rd.y * 70.0);
+  vec2 sid = mod(floor(sg), 251.0);
+  float sr = h21(sid + 17.0);
+  if (sr > 0.965) {
+    float tw = 0.45 + 0.55 * sin(uTime * (1.2 + 3.0 * h21(sid + 5.0)) + sr * 60.0);
+    col += vec3(0.75, 0.8, 1.0) * smoothstep(0.22, 0.0, length(fract(sg) - 0.5)) * tw * smoothstep(0.05, 0.2, rd.y);
+  }
+
+  // a big striped sunset, rising behind Buddy
+  vec2 sp = vec2(a, rd.y - 0.04);
+  float sd = length(sp), sunR = 0.2;
+  col += vec3(1.0, 0.18, 0.35) * 0.22 * exp(-max(sd - sunR, 0.0) * 14.0);
+  if (sd < sunR) {
+    float k = (sp.y + sunR) / (2.0 * sunR);
+    float gap = 0.55 * smoothstep(0.55, 0.05, k);
+    if (fract(sp.y * 38.0 - uTime * 0.25) >= gap) col = mix(vec3(1.0, 0.1, 0.32), vec3(1.0, 0.72, 0.12), k);
+  }
+
+  // city skyline on the horizon, a few windows still lit
+  float bx = a * 26.0, bid = mod(floor(bx), 163.0);
+  float bh = -0.015 + 0.045 * h21(vec2(bid, 4.0)) + 0.035 * step(0.86, h21(vec2(bid, 8.0)));
+  if (fract(bx) < 0.08 || fract(bx) > 0.92) bh -= 0.012;
+  if (rd.y < bh) {
+    col = vec3(0.025, 0.012, 0.07);
+    if (rd.y > bh - 0.004) col += vec3(0.5, 0.08, 0.25) * 0.5;
+    vec2 wg = vec2(bx * 5.0, rd.y * 170.0);
+    vec2 wid = mod(floor(wg), 197.0);
+    if (fract(bx) > 0.12 && fract(bx) < 0.88 && fract(wg.x) < 0.55 && fract(wg.y) < 0.5 && rd.y < bh - 0.008) {
+      float lit = step(0.78, h21(wid)) * step(0.06, fract(h21(wid + 2.3) + uTime * 0.05));
+      col += vec3(1.0, 0.7, 0.3) * 0.55 * lit;
+    }
+  }
+
   vec2 g = vec2(a * 9.0, rd.y * 14.0 - uTime * 0.6);
   vec2 id = floor(g), f = fract(g) - 0.5;
   if (h21(id) > 0.9) {
@@ -612,7 +647,7 @@ void main() {
     if (tt > 14.0) break;
   }
 
-  vec3 bg = sky(rd);
+  vec3 bg = hit && mat < 7.5 ? vec3(0.0) : sky(rd);   // only where the sky actually shows
   vec3 col = bg;
   vec3 L = normalize(vec3(-0.5, 0.9, 0.6));
   float sw = clamp(uSw, 0.0, 1.0);
@@ -657,9 +692,29 @@ void main() {
     } else if (mat < 7.5) {
       emit = vec3(1.0, 0.25, 0.1) * (0.6 + 0.4 * step(0.5, fract(t * 0.5)));
     } else {
-      float chk = mod(floor(pos.x * 2.5) + floor(pos.z * 2.5), 2.0);
-      alb = mix(vec3(0.3, 0.04, 0.14), vec3(0.03, 0.04, 0.17), chk);
+      // the avenue Buddy is standing in: asphalt, lane dashes, sidewalk, and footprint cracks
       specAmt = 0.0;
+      alb = vec3(0.035, 0.03, 0.09);
+      if (pos.z < -1.05) {
+        alb = vec3(0.09, 0.05, 0.17);
+        vec2 tl = fract(pos.xz * 4.0);
+        if (tl.x < 0.08 || tl.y < 0.08) alb *= 0.6;
+      } else if (pos.z < -0.95) alb = vec3(0.16, 0.1, 0.26);              // curb
+      if (abs(pos.z - 0.75) < 0.028 && fract(pos.x * 1.3) < 0.5) alb = vec3(0.75, 0.5, 0.05);
+      if (abs(pos.z - 1.6) < 0.18 && fract(pos.x * 5.0) < 0.5 && abs(pos.x - 1.2) < 0.45) alb = vec3(0.35, 0.33, 0.45);   // crosswalk
+      vec3 lf = turn(pos);
+      for (int k = 0; k < 2; k++) {
+        float sgn = k == 0 ? -1.0 : 1.0;
+        vec2 d = lf.xz - vec2(0.27 * sgn, 0.14);
+        float r = length(d);
+        if (r > 0.1 && r < 0.45) {
+          float seg = 6.2832 / 7.0;
+          float ang = atan(d.y, d.x);
+          float i = floor(ang / seg);
+          float ac = (i + 0.5) * seg + (h21(vec2(i, sgn)) - 0.5) * 0.5 + 0.06 * sin(r * 45.0 + i);
+          if (abs(sin(ang - ac)) * r < 0.011 && r < 0.2 + 0.24 * h21(vec2(i + 3.0, sgn))) alb = vec3(0.0);
+        }
+      }
     }
 
     col = alb * (amb * vec3(0.4, 0.42, 0.85) + 1.15 * toon * vec3(1.0, 0.82, 0.55));
