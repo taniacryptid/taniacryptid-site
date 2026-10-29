@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blog editor · taniacryptid</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d1236">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+  .bar h1 { margin: 0; font-size: clamp(36px, 5vw, 52px); }
+  .who { font-size: 14px; color: var(--muted); }
+
+  /* post list */
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .rows li {
+    display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: center;
+    padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 2px solid var(--outline);
+  }
+  .thumb { width: 64px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--bg2); display: block; }
+  .rows h3 { margin: 0; font-size: 18px; line-height: 1.25; }
+  .meta { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+  .pill { display: inline-block; padding: 0 8px; border-radius: 999px; font-family: "VT323", monospace; font-size: 17px; margin-right: 6px; }
+  .pill.published { background: var(--teal); color: var(--outline); }
+  .pill.draft { background: var(--mustard); color: var(--outline); }
+  .acts { display: flex; gap: 8px; }
+  .acts .btn { padding: 6px 12px; font-size: 14px; }
+
+  /* editor */
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+  .side { display: grid; gap: 18px; position: sticky; top: 16px; }
+  .side .panel { padding: 20px; }
+  .side .btn { width: 100%; justify-content: center; }
+  .stack { display: grid; gap: 10px; }
+  #title-in { font-size: 24px; font-weight: 700; }
+  .slug-row { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+  .slug-row input { padding: 6px 9px; font-size: 14px; }
+  .cover-box { aspect-ratio: 16 / 10; border-radius: 12px; border: 2px dashed #2c2f6e; display: grid; place-items: center; overflow: hidden; background: var(--bg); margin-bottom: 10px; color: var(--muted); font-size: 14px; }
+  .cover-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tabs { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .tabs button[aria-selected="true"] { background: var(--mustard); color: var(--outline); border-color: var(--outline); }
+  .tabs .spacer { flex: 1; }
+  .tabs .btn { padding: 5px 12px; font-size: 14px; }
+  #body-in { min-height: 460px; font-size: 17px; }
+  #preview { min-height: 460px; padding: 18px 20px; border-radius: 10px; border: 2px solid #2c2f6e; background: var(--bg); }
+  .status-line { font-size: 14px; color: var(--muted); margin: 0; }
+
+  @media (max-width: 859px) {
+    .grid { grid-template-columns: 1fr; }
+    .side { position: static; }
+    .rows li { grid-template-columns: 1fr; }
+    .thumb { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <a class="brand" href="/">taniacryptid</a>
+  <nav aria-label="Main"><a href="/blog">blog</a><a href="/admin">editor</a></nav>
+</header>
+<main class="wrap">
+  <p class="msg" id="msg" hidden></p>
+  <p id="loading" class="status-line">Tuning in…</p>
+
+  <!-- list of posts -->
+  <section id="list-view" hidden>
+    <div class="bar">
+      <div>
+        <p class="overline">CH 00 / control room</p>
+        <h1>Your posts</h1>
+      </div>
+      <div class="stack" style="justify-items:end">
+        <a class="btn" href="#new">+ New post</a>
+        <span class="who"><span id="who"></span> · <button class="linkish" id="logout" type="button">Log out</button></span>
+      </div>
+    </div>
+    <ul class="rows" id="rows"></ul>
+    <div class="empty" id="no-posts" hidden>
+      <div class="bars" aria-hidden="true"><i style="background:#c8c8c8"></i><i style="background:#d6cf2a"></i><i style="background:#2ec4d6"></i><i style="background:#3cc24a"></i><i style="background:#c83cc8"></i><i style="background:#d6332a"></i><i style="background:#2a3cd6"></i></div>
+      <div><p class="osdline">CH 01 / signal pending</p><p>No posts yet. Hit “New post” to write the first one.</p></div>
+    </div>
+  </section>
+
+  <!-- editor -->
+  <form id="edit-view" hidden>
+    <div class="bar">
+      <div>
+        <a class="back" href="#" id="back-link" style="margin-bottom:8px">← All posts</a>
+        <h1 id="edit-heading">New post</h1>
+      </div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="field">
+          <label for="title-in">Title</label>
+          <input type="text" id="title-in" required>
+          <p class="slug-row"><span>/posts/</span><input type="text" id="slug-in" aria-label="Link (slug)" placeholder="made-from-the-title"></p>
+        </div>
+        <div class="field">
+          <label for="excerpt-in">Excerpt</label>
+          <input type="text" id="excerpt-in" maxlength="280" placeholder="One line that shows on the post card">
+        </div>
+        <div class="field">
+          <div class="tabs" role="tablist">
+            <button class="btn alt" type="button" role="tab" id="tab-write" aria-selected="true">Write</button>
+            <button class="btn alt" type="button" role="tab" id="tab-preview" aria-selected="false">Preview</button>
+            <span class="spacer"></span>
+            <button class="btn alt" type="button" id="insert-img">Insert image</button>
+          </div>
+          <textarea id="body-in" aria-label="Post body" placeholder="Write in Markdown. **bold**, *italic*, ## Heading, [link](https://…), > quote"></textarea>
+          <div id="preview" class="prose" hidden></div>
+          <p class="hint">Formatting uses Markdown. Use “Insert image” to add pictures inside the post.</p>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel stack">
+          <p class="status-line" id="status-line">Not saved yet</p>
+          <button class="btn" type="submit" id="publish-btn">Publish</button>
+          <button class="btn alt" type="button" id="draft-btn">Save as draft</button>
+          <a class="btn alt" id="view-btn" target="_blank" rel="noopener" hidden>View post ↗</a>
+        </div>
+        <div class="panel">
+          <label>Cover image</label>
+          <div class="cover-box" id="cover-box">No cover</div>
+          <div class="acts">
+            <button class="btn alt" type="button" id="cover-btn">Upload</button>
+            <button class="btn danger" type="button" id="cover-remove" hidden>Remove</button>
+          </div>
+        </div>
+        <div class="panel">
+          <label for="cats-in">Categories</label>
+          <input type="text" id="cats-in" placeholder="Community, Streams">
+          <p class="hint">Separate with commas.</p>
+        </div>
+        <div class="panel">
+          <label for="date-in">Publish date</label>
+          <input type="date" id="date-in">
+          <p class="hint">Leave empty to use the day you publish. Pick an earlier day to backdate a post.</p>
+        </div>
+        <button class="btn danger" type="button" id="delete-btn" hidden>Delete post</button>
+      </aside>
+    </div>
+  </form>
+  <input type="file" id="file-in" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+</main>
+<script type="module">
+import { getUser, logout, refreshSession } from '/js/identity.js';
+import { marked } from '/js/marked.js';
+
+const $ = id => document.getElementById(id);
+const msgEl = $('msg');
+const show = (text, kind = 'err') => { msgEl.textContent = text; msgEl.className = `msg ${kind}`; msgEl.hidden = !text; };
+// Errors that need a fresh login get a button for it (copy your writing first if you need to)
+const showErr = err => {
+  show(err.message);
+  if (!err.relogin) return;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'linkish'; btn.textContent = 'Log in again';
+  btn.addEventListener('click', async () => {
+    if (dirty && !confirm('Unsaved changes will be lost. Log in again anyway?')) return;
+    dirty = false;
+    await logout().catch(() => {});
+    location.href = '/login?next=' + encodeURIComponent(location.pathname + location.hash);
+  });
+  msgEl.append(' ', btn);
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '';
+const localToday = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const imgUrl = (key, size) => key.includes('/') ? key : `/img/${size}/${encodeURIComponent(key)}`;
+const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+
+// The login token lives in the nf_jwt cookie; send it as a header too so the server can always verify it
+const loginToken = () => { const m = document.cookie.match(/(?:^|;\s*)nf_jwt=([^;]+)/); return m ? decodeURIComponent(m[1]) : null; };
+async function api(path, opts = {}) {
+  await refreshSession().catch(() => null);   // renews the token if it's about to expire
+  const token = loginToken();
+  const headers = { ...opts.headers, ...(token && { Authorization: `Bearer ${token}` }) };
+  const res = await fetch(path, { credentials: 'same-origin', ...opts, headers });
+  // Don't bounce to the login page here: that would throw away unsaved writing
+  if (res.status === 401 || res.status === 403) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data.error || 'Your login session couldn’t be verified.');
+    err.relogin = true;
+    throw err;
+  }
+  if (res.status === 204) return null;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
+}
+
+// ---------- routing: #new, #edit=ID, or the list ----------
+let current = null;   // post being edited (null for a new one)
+let dirty = false;
+function route() {
+  show('');
+  const m = location.hash.match(/^#edit=(\d+)$/);
+  if (location.hash === '#new') openEditor(null);
+  else if (m) openEditor(Number(m[1]));
+  else showList();
+}
+
+addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+$('back-link').addEventListener('click', e => {
+  if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
+});
+
+// ---------- list ----------
+async function showList() {
+  dirty = false;
+  $('edit-view').hidden = true;
+  $('list-view').hidden = false;
+  document.title = 'Blog editor · taniacryptid';
+  try {
+    const posts = await api('/api/posts?all=1');
+    $('no-posts').hidden = posts.length > 0;
+    $('rows').innerHTML = posts.map(p => `<li>
+      ${p.coverImage ? `<img class="thumb" src="${imgUrl(p.coverImage, 'card')}" alt="">` : '<span class="thumb"></span>'}
+      <div>
+        <h3>${esc(p.title)}</h3>
+        <p class="meta"><span class="pill ${p.status}">${p.status}</span>${p.status === 'published' ? fmtDate(p.publishedAt) : 'edited ' + fmtDate(p.updatedAt)}${p.categories.length ? ' · ' + p.categories.map(esc).join(', ') : ''}</p>
+      </div>
+      <div class="acts">
+        <a class="btn" href="#edit=${p.id}">Edit</a>
+        <a class="btn alt" href="/posts/${encodeURIComponent(p.slug)}" target="_blank" rel="noopener">View</a>
+      </div>
+    </li>`).join('');
+  } catch (err) { showErr(err); }
+}
+
+// ---------- editor ----------
+const fields = { title: $('title-in'), slug: $('slug-in'), excerpt: $('excerpt-in'), body: $('body-in'), categories: $('cats-in'), date: $('date-in') };
+let cover = null, slugTouched = false;
+
+function setCover(key) {
+  cover = key;
+  $('cover-box').innerHTML = key ? `<img src="${imgUrl(key, 'card')}" alt="Cover preview">` : 'No cover';
+  $('cover-remove').hidden = !key;
+}
+
+function setStatus(post) {
+  const live = post?.status === 'published';
+  $('publish-btn').textContent = live ? 'Update' : 'Publish';
+  $('draft-btn').textContent = live ? 'Unpublish (back to draft)' : 'Save as draft';
+  $('status-line').textContent = !post ? 'Not saved yet'
+    : live ? `Live since ${fmtDate(post.publishedAt)}` : `Draft · saved ${new Date(post.updatedAt).toLocaleString()}`;
+  $('view-btn').hidden = !post;
+  if (post) $('view-btn').href = `/posts/${encodeURIComponent(post.slug)}`;
+  $('delete-btn').hidden = !post;
+  $('edit-heading').textContent = post ? 'Edit post' : 'New post';
+}
+
+async function openEditor(id) {
+  $('list-view').hidden = true;
+  $('edit-view').hidden = false;
+  showTab('write');
+  let post = null;
+  if (id !== null) {
+    try { post = await api(`/api/posts/${id}`); }
+    catch (err) { showErr(err); return; }
+  }
+  current = post;
+  fields.title.value = post?.title ?? '';
+  fields.slug.value = post?.slug ?? '';
+  fields.excerpt.value = post?.excerpt ?? '';
+  fields.body.value = post?.body ?? '';
+  fields.categories.value = post?.categories?.join(', ') ?? '';
+  fields.date.value = post?.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 10) : '';
+  fields.date.max = localToday();
+  slugTouched = !!post;
+  setCover(post?.coverImage ?? null);
+  setStatus(post);
+  dirty = false;
+  document.title = `${post ? 'Edit' : 'New'} post · taniacryptid`;
+  fields.title.focus();
+}
+
+Object.values(fields).forEach(f => f.addEventListener('input', () => { dirty = true; }));
+fields.title.addEventListener('input', () => { if (!slugTouched) fields.slug.value = slugify(fields.title.value); });
+fields.slug.addEventListener('input', () => { slugTouched = true; });
+
+async function save(status) {
+  const payload = {
+    title: fields.title.value,
+    slug: fields.slug.value,
+    excerpt: fields.excerpt.value,
+    body: fields.body.value,
+    categories: fields.categories.value,
+    coverImage: cover,
+    status,
+    publishedAt: fields.date.value || null,
+  };
+  if (!payload.title.trim()) { show('Give the post a title first.'); fields.title.focus(); return; }
+  const btns = [$('publish-btn'), $('draft-btn')];
+  btns.forEach(b => b.disabled = true);
+  show('');
+  try {
+    const post = current
+      ? await api(`/api/posts/${current.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      : await api('/api/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const wasNew = !current;
+    current = post;
+    fields.slug.value = post.slug;
+    fields.date.value = post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 10) : '';
+    dirty = false;
+    setStatus(post);
+    show(status === 'published' ? 'Published! It’s on the air.' : 'Saved as a draft.', 'ok');
+    if (wasNew) history.replaceState(null, '', `#edit=${post.id}`);
+  } catch (err) { showErr(err); }
+  finally { btns.forEach(b => b.disabled = false); }
+}
+
+$('edit-view').addEventListener('submit', e => { e.preventDefault(); save('published'); });
+$('draft-btn').addEventListener('click', () => save('draft'));
+
+$('delete-btn').addEventListener('click', async () => {
+  if (!current || !confirm(`Delete “${current.title}” for good?`)) return;
+  try {
+    await api(`/api/posts/${current.id}`, { method: 'DELETE' });
+    dirty = false;
+    location.hash = '';
+    show('Post deleted.', 'ok');
+  } catch (err) { showErr(err); }
+});
+
+// ---------- write / preview ----------
+function showTab(which) {
+  const preview = which === 'preview';
+  $('tab-write').setAttribute('aria-selected', String(!preview));
+  $('tab-preview').setAttribute('aria-selected', String(preview));
+  fields.body.hidden = preview;
+  $('preview').hidden = !preview;
+  if (preview) $('preview').innerHTML = marked.parse(fields.body.value || '*Nothing written yet.*');
+}
+$('tab-write').addEventListener('click', () => showTab('write'));
+$('tab-preview').addEventListener('click', () => showTab('preview'));
+
+// ---------- uploads (cover + inline images) ----------
+let uploadTarget = 'cover';
+async function upload(file) {
+  const form = new FormData();
+  form.append('image', file);
+  return api('/api/uploads', { method: 'POST', body: form });
+}
+$('cover-btn').addEventListener('click', () => { uploadTarget = 'cover'; $('file-in').click(); });
+$('insert-img').addEventListener('click', () => { uploadTarget = 'body'; $('file-in').click(); });
+$('cover-remove').addEventListener('click', () => { setCover(null); dirty = true; });
+
+$('file-in').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  const btn = uploadTarget === 'cover' ? $('cover-btn') : $('insert-img');
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  try {
+    const { key } = await upload(file);
+    if (uploadTarget === 'cover') setCover(key);
+    else {
+      const ta = fields.body;
+      const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+      const snippet = `\n![${alt}](${imgUrl(key, 'cover')})\n`;
+      ta.setRangeText(snippet, ta.selectionStart, ta.selectionEnd, 'end');
+      ta.focus();
+    }
+    dirty = true;
+  } catch (err) { showErr(err); }
+  finally { btn.disabled = false; btn.textContent = label; }
+});
+// ---------- gate: admins only (runs last, once everything above is set up) ----------
+const user = await getUser();
+if (!user) location.replace('/login?next=/admin');
+else if (!user.roles?.includes('admin')) location.replace('/login');
+else {
+  $('who').textContent = user.email;
+  $('loading').hidden = true;
+  addEventListener('hashchange', route);
+  route();
+}
+
+$('logout').addEventListener('click', async () => { await logout().catch(() => {}); location.href = '/'; });
+</script>
+</body>
+</html>

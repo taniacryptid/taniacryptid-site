@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>taniacryptid</title>
+<meta name="description" content="taniacryptid — community builder and fan of stories.">
+<meta name="theme-color" content="#0d1236">
+<meta property="og:title" content="taniacryptid">
+<meta property="og:description" content="Community builder and fan of stories.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230d1236'/%3E%3Crect x='3' y='4' width='3' height='3' fill='%23ffd84a'/%3E%3Crect x='10' y='4' width='3' height='3' fill='%23ffd84a'/%3E%3Crect x='4' y='9' width='8' height='2' fill='%23ffd84a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --room: #0d1236;
+    --phosphor: #ffd84a;
+    --pink: #e8382b;
+    --teal: #7ce0d3;
+    --ink: #f3ecf5;
+    --ink-dim: rgba(243, 236, 245, 0.72);
+    --chip: rgba(13, 18, 54, 0.82);
+    --band: rgba(6, 9, 26, 0.86);
+    --line: rgba(255, 216, 74, 0.35);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--room);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --room: #0d1236; } }
+  :root[data-theme="dark"] { --room: #0d1236; }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; min-height: 100%; overflow-x: hidden; background: var(--room); color: var(--ink);
+    font-family: "VT323", ui-monospace, "Courier New", monospace;
+    font-size: 19px; line-height: 1.45;
+  }
+  ::selection { background: var(--phosphor); color: #0d1236; }
+  canvas {
+    display: block; width: 100%; height: 100%; touch-action: none; cursor: grab;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+  canvas:active { cursor: grabbing; }
+
+  /* fixed, non-interactive broadcast overlays */
+  .grain {
+    position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+  .vignette {
+    position: fixed; inset: 0; z-index: 39; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 58%, rgba(4, 6, 20, 0.55) 100%);
+  }
+  .chroma { position: fixed; inset: 0; z-index: 30; pointer-events: none; }
+  .chroma::before, .chroma::after {
+    content: ""; position: absolute; inset: 0; mix-blend-mode: screen; opacity: 0.16;
+  }
+  .chroma::before { background: #f0a; transform: translateX(-1.5px); }
+  .chroma::after { background: #0ff; transform: translateX(1.5px); }
+
+  /* ticker strip (hidden for now) */
+  .ticker { display: none; }
+
+  /* hero: full-viewport stage with the buddy always live */
+  .stage { position: relative; height: 100svh; min-height: 620px; }
+  .stage canvas { position: absolute; inset: 0; }
+
+  .caption {
+    position: absolute; left: clamp(16px, 4vw, 44px); top: clamp(64px, 11vh, 110px);
+    pointer-events: none; max-width: min(560px, 88vw);
+  }
+  .caption h1 {
+    margin: 0; font-family: "Silkscreen", monospace; font-weight: 700;
+    font-size: clamp(30px, 6.4vw, 62px); line-height: 0.98; color: var(--ink);
+    text-shadow: 4px 4px 0 var(--pink), 8px 8px 0 rgba(6, 9, 26, 0.9);
+  }
+  .caption .tagline {
+    margin: 12px 0 0; font-family: "Silkscreen", monospace; font-weight: 400;
+    font-size: 11px; letter-spacing: 0.1em; color: var(--teal);
+  }
+  .caption .cue {
+    display: inline-block; margin-top: 20px; padding: 7px 12px; font-family: "Silkscreen", monospace;
+    font-size: 11px; color: var(--phosphor); background: var(--band); border: 2px solid var(--line);
+    box-shadow: 3px 3px 0 rgba(232, 56, 43, 0.7);
+  }
+
+  /* floating widget cards over the stage */
+  .stage-widgets {
+    position: absolute; left: clamp(16px, 4vw, 44px); right: clamp(16px, 4vw, 44px);
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; z-index: 10;
+  }
+  .widget {
+    font-family: "Silkscreen", monospace; font-size: 11px; color: var(--ink);
+    background: var(--chip); border: 2px solid var(--line); padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px; flex: 0 1 auto;
+    backdrop-filter: blur(3px);
+  }
+  .widget b { color: var(--phosphor); font-weight: 700; }
+  .widget .lamp { color: #ff5d43; animation: lamp 1.2s steps(2, jump-none) infinite; }
+  @keyframes lamp { 50% { opacity: 0.25; } }
+
+  /* controls stay interactive above overlays */
+  .controls {
+    position: absolute; right: clamp(16px, 4vw, 44px); bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; z-index: 20;
+  }
+  button {
+    font: inherit; font-family: "Silkscreen", monospace; font-size: 11px; color: var(--ink);
+    background: var(--chip); border: 2px solid var(--phosphor); padding: 8px 12px; border-radius: 0;
+    cursor: pointer; box-shadow: 3px 3px 0 var(--pink); backdrop-filter: blur(3px);
+  }
+  button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--pink); }
+  button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--pink); }
+  button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+
+  /* footer */
+  footer {
+    background: var(--room); border-top: 2px solid var(--phosphor);
+    padding: 26px clamp(20px, 7vw, 120px) calc(30px + env(safe-area-inset-bottom, 0px));
+  }
+  footer p { margin: 0; font-family: "Silkscreen", monospace; font-size: 11px; color: var(--ink-dim); }
+
+  /* blog */
+  .blog {
+    background: var(--room); border-top: 2px solid var(--phosphor);
+    padding: 44px clamp(20px, 7vw, 120px) 50px;
+  }
+  .blog-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .blog-head h2 {
+    margin: 0; font-family: "Silkscreen", monospace; font-weight: 700;
+    font-size: clamp(18px, 3vw, 26px); line-height: 1.1; color: var(--ink);
+    text-shadow: 3px 3px 0 var(--pink);
+  }
+  .blog-head .slot { font-family: "Silkscreen", monospace; font-size: 11px; color: var(--ink-dim); }
+  .blog-empty {
+    background: var(--chip); border: 2px dashed var(--line); padding: 22px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .blog-empty .screen {
+    flex: 0 0 auto; width: 54px; height: 42px; background: rgba(6, 9, 26, 0.9);
+    border: 2px solid var(--phosphor); display: grid; place-items: center;
+    font-family: "Silkscreen", monospace; font-size: 11px; color: var(--teal);
+    animation: staticFlicker 2.4s steps(2, jump-none) infinite;
+  }
+  @keyframes staticFlicker { 50% { opacity: 0.6; } }
+  .blog-empty p { margin: 0; font-size: 19px; color: var(--ink-dim); max-width: 52ch; }
+  .blog-empty p b { color: var(--phosphor); font-weight: 400; }
+  @media (prefers-reduced-motion: reduce) { .blog-empty .screen { animation: none; } }
+
+  .fallback { position: absolute; inset: 0; display: none; place-items: center; padding: 24px; text-align: center; z-index: 60; background: rgba(6, 9, 26, 0.94); }
+  .fallback div { max-width: 44ch; line-height: 1.6; font-size: 13px; font-family: "Silkscreen", monospace; }
+  .fallback h2 { color: var(--phosphor); margin: 0 0 10px; font-size: 20px; }
+  .fallback a { color: var(--pink); }
+
+  @media (max-width: 560px) {
+    .controls { left: 16px; right: 16px; justify-content: flex-start; }
+    .stage { min-height: 560px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .widget .lamp { animation: none; }
+  }</style>
+</head>
+<body>
+<div class="ticker" aria-hidden="true"><div>
+  <span><i>ON AIR:</i> CRT Buddy — live render, no reruns</span>
+  <span><i>NOW SHOWING:</i> the buddy itself</span>
+  <span><i>RECEPTION:</i> excellent in Chrome, Edge and Safari</span>
+</div></div>
+<div class="chroma" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="stage">
+  <canvas id="c" aria-label="A cute charcoal CRT television with a pixel face on its screen, waddling in place, with little horns, claws and a monster tail"></canvas>
+
+  <div class="caption">
+    <h1>taniacryptid</h1>
+    <p class="tagline">community builder and fan of stories</p>
+    <span class="cue">DRAG TO ORBIT &middot; SCROLL TO ZOOM</span>
+  </div>
+
+  <div class="stage-widgets" aria-hidden="false">
+    <div class="widget"><b class="lamp">&#9679;</b> ON AIR</div>
+    <div class="widget"><b>FEED</b> raymarch / low-res</div>
+  </div>
+
+  <div class="controls">
+    <button id="pix" type="button">Pixels: chunky</button>
+    <button id="pause" type="button">Pause</button>
+    <button id="reset" type="button">Reset view</button>
+  </div>
+  <div class="fallback" id="fallback">
+    <div>
+      <h2>WebGPU isn't available here</h2>
+      <p id="fallback-msg">This browser or device doesn't expose WebGPU, so CRT Buddy can't appear. Try a recent Chrome, Edge, or Safari, or check your device on <a href="https://webgpureport.org/" target="_blank" rel="noopener">webgpureport.org</a>. The rest of the site still works.</p>
+    </div>
+  </div>
+</div>
+
+<div class="blog" id="blog">
+  <div class="blog-head">
+    <h2>BLOG</h2>
+    <span class="slot">CH 03 &middot; SIGNAL PENDING</span>
+  </div>
+  <div class="blog-empty">
+    <div class="screen" aria-hidden="true">--</div>
+    <p>No posts yet — nothing on the air.</p>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 taniacryptid</p>
+</footer>
+
+<script>
+const WGSL = /* wgsl */`
+struct U {
+  res: vec2f,
+  time: f32,
+  yaw: f32,
+  pitch: f32,
+  dist: f32,
+  pad: vec2f,
+};
+@group(0) @binding(0) var<uniform> u: U;
+
+const FLOOR_Y = -0.72;
+const SCR_C = vec3f(0.0, 0.1, 0.435);
+const SCR_H = vec2f(0.42, 0.315); // 4:3 tube
+const PI = 3.14159265;
+
+@vertex
+fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
+  var p = array<vec2f, 3>(vec2f(-1.0, -3.0), vec2f(-1.0, 1.0), vec2f(3.0, 1.0));
+  return vec4f(p[i], 0.0, 1.0);
+}
+
+fn sdBox(p: vec3f, b: vec3f) -> f32 {
+  let q = abs(p) - b;
+  return length(max(q, vec3f(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+fn sdRoundBox(p: vec3f, b: vec3f, r: f32) -> f32 { return sdBox(p, b - vec3f(r)) - r; }
+fn sdCapsule(p: vec3f, a: vec3f, b: vec3f, r: f32) -> f32 {
+  let pa = p - a; let ba = b - a;
+  let h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - r;
+}
+fn sdTaper(p: vec3f, a: vec3f, b: vec3f, ra: f32, rb: f32) -> f32 {
+  let pa = p - a; let ba = b - a;
+  let h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - mix(ra, rb, h);
+}
+fn roarAmt(t: f32) -> f32 {
+  return select(0.0, 1.0, (i32(floor(t / 5.0)) % 4) == 2);
+}
+fn smin(a: f32, b: f32, k: f32) -> f32 {
+  let h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+fn rotZ(v: vec3f, a: f32) -> vec3f {
+  let c = cos(a); let s = sin(a);
+  return vec3f(c * v.x - s * v.y, s * v.x + c * v.y, v.z);
+}
+
+// world -> body-local coordinates (waddle: bob + tilt around the base)
+fn bodyXform(p: vec3f) -> vec3f {
+  let t = u.time;
+  let bob = 0.035 * abs(sin(t * 3.0));
+  let tilt = 0.045 * sin(t * 3.0);
+  let roar = roarAmt(t);
+  let q = p - vec3f(roar * 0.012 * sin(t * 55.0), bob - 0.5, 0.0);
+  var r = rotZ(q, -tilt * (1.0 - roar));
+  // lean back on the roar (rotate in yz around the base)
+  let a = -0.12 * roar;
+  r = vec3f(r.x, cos(a) * r.y - sin(a) * r.z, sin(a) * r.y + cos(a) * r.z);
+  return r + vec3f(0.0, -0.5, 0.0);
+}
+
+// returns (distance, material, object-only distance, 0)
+// mats: 1 casing, 2 screen, 3 button, 5 antenna rod, 6 feet, 7 LED, 8 floor, 9 antenna tip
+fn mapS(p: vec3f) -> vec4f {
+  let t = u.time;
+  let dFloor = p.y - FLOOR_Y;
+  let bdist = length(p - vec3f(0.0, 0.0, -0.3)) - 1.6;
+  if (bdist > 0.25) {
+    if (dFloor < bdist) { return vec4f(dFloor, 8.0, bdist, 0.0); }
+    return vec4f(bdist, 0.0, bdist, 0.0);
+  }
+
+  let q = bodyXform(p);
+  // casing: flat front box + rounded rear tube housing
+  var d = sdRoundBox(q - vec3f(0.0, 0.0, 0.1), vec3f(0.54, 0.5, 0.35), 0.09);
+  d = smin(d, sdRoundBox(q - vec3f(0.0, 0.02, -0.33), vec3f(0.42, 0.39, 0.24), 0.14), 0.06);
+  let roar = roarAmt(t);
+  // thick swishy monster tail
+  var tp = vec3f(0.0, -0.2, -0.5);
+  for (var k = 1; k <= 6; k++) {
+    let s = f32(k) / 6.0;
+    let cur = vec3f(0.28 * sin(t * 1.5 - s * 1.2) * s * s,
+                    -0.2 - 0.6 * s + 0.2 * s * s + 0.3 * roar * s * s,
+                    -0.5 - 0.85 * s);
+    d = smin(d, sdTaper(q, tp, cur, mix(0.2, 0.05, s - 1.0 / 6.0), mix(0.2, 0.05, s)), 0.06);
+    tp = cur;
+  }
+  // tiny arms, thrown up on the roar
+  for (var k = 0; k < 2; k++) {
+    let s = select(-1.0, 1.0, k == 1);
+    let sh = vec3f(0.5 * s, -0.12, 0.2);
+    let hd = vec3f(0.66 * s, -0.2 + 0.03 * sin(t * 3.0 + s) + 0.26 * roar, 0.32);
+    d = smin(d, sdTaper(q, sh, hd, 0.06, 0.05), 0.04);
+  }
+  // screen recess
+  d = max(d, -sdRoundBox(q - vec3f(SCR_C.x, SCR_C.y, 0.52), vec3f(SCR_H.x + 0.035, SCR_H.y + 0.035, 0.17), 0.06));
+  var m = 1.0;
+
+  let ds = max(sdRoundBox(q - vec3f(SCR_C.x, SCR_C.y, 0.3), vec3f(SCR_H.x, SCR_H.y, 0.16), 0.06),
+               length(q - vec3f(SCR_C.x, SCR_C.y, -1.63)) - 2.07);
+  if (ds < d) { d = ds; m = 2.0; }
+
+  let dbtn = sdRoundBox(q - vec3f(0.27, -0.36, 0.45), vec3f(0.05, 0.022, 0.012), 0.01);
+  if (dbtn < d) { d = dbtn; m = 3.0; }
+  let dled = length(q - vec3f(0.39, -0.36, 0.445)) - 0.018;
+  if (dled < d) { d = dled; m = 7.0; }
+
+  // little horns
+  for (var k = 0; k < 2; k++) {
+    let s = select(-1.0, 1.0, k == 1);
+    let dh = sdTaper(q, vec3f(0.24 * s, 0.44, 0.1), vec3f(0.31 * s, 0.66, 0.06), 0.075, 0.018);
+    if (dh < d) { d = dh; m = 5.0; }
+    // hand claws
+    let hd = vec3f(0.66 * s, -0.2 + 0.03 * sin(t * 3.0 + s) + 0.26 * roar, 0.32);
+    for (var j = 0; j < 2; j++) {
+      let off = select(-0.025, 0.025, j == 1);
+      let dc = sdTaper(q, hd + vec3f(0.0, off, 0.03), hd + vec3f(0.03 * s, off * 1.4, 0.1), 0.022, 0.006);
+      if (dc < d) { d = dc; m = 5.0; }
+    }
+  }
+
+  // stubby feet, stepping in turn
+  for (var k = 0; k < 2; k++) {
+    let s = select(-1.0, 1.0, k == 1);
+    let lift = 0.05 * max(0.0, sin(t * 3.0 + f32(k) * PI));
+    let df = sdCapsule(q, vec3f(0.27 * s, -0.45 + lift, 0.05), vec3f(0.27 * s, -0.62 + lift, 0.09), 0.1);
+    if (df < d) { d = df; m = 6.0; }
+    for (var j = 0; j < 3; j++) {
+      let dx = (f32(j) - 1.0) * 0.06;
+      let dc = sdTaper(q, vec3f(0.27 * s + dx, -0.67 + lift, 0.15), vec3f(0.27 * s + dx * 1.3, -0.7 + lift, 0.25), 0.03, 0.008);
+      if (dc < d) { d = dc; m = 5.0; }
+    }
+  }
+
+  let dObj = d;
+  if (dFloor < d) { return vec4f(dFloor, 8.0, dObj, 0.0); }
+  return vec4f(d, m, dObj, 0.0);
+}
+
+fn calcNormal(p: vec3f) -> vec3f {
+  let e = vec2f(1.0, -1.0) * 0.0012;
+  return normalize(e.xyy * mapS(p + e.xyy).x + e.yyx * mapS(p + e.yyx).x +
+                   e.yxy * mapS(p + e.yxy).x + e.xxx * mapS(p + e.xxx).x);
+}
+
+fn softShadow(ro: vec3f, rd: vec3f) -> f32 {
+  var res = 1.0;
+  var t = 0.03;
+  for (var i = 0; i < 40; i++) {
+    let h = mapS(ro + rd * t).z;
+    res = min(res, 9.0 * h / t);
+    t = t + clamp(h, 0.02, 0.2);
+    if (res < 0.001 || t > 4.0) { break; }
+  }
+  return clamp(res, 0.0, 1.0);
+}
+
+fn bayer2(a: vec2f) -> f32 {
+  let f = floor(a);
+  return fract(dot(f, vec2f(0.5, f.y * 0.75)));
+}
+fn bayer4(a: vec2f) -> f32 { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
+
+// color-bar test card with a tiny happy face in the middle
+fn testCard(suv: vec2f, c: vec2f, t: f32) -> vec3f {
+  let x = clamp(floor((suv.x * 0.5 + 0.5) * 7.0), 0.0, 6.0);
+  var col = vec3f(0.0);
+  let ix = i32(x);
+  if (ix == 0) { col = vec3f(0.78); }
+  else if (ix == 1) { col = vec3f(0.8, 0.8, 0.1); }
+  else if (ix == 2) { col = vec3f(0.1, 0.75, 0.85); }
+  else if (ix == 3) { col = vec3f(0.15, 0.75, 0.2); }
+  else if (ix == 4) { col = vec3f(0.8, 0.2, 0.8); }
+  else if (ix == 5) { col = vec3f(0.85, 0.15, 0.12); }
+  else { col = vec3f(0.15, 0.2, 0.85); }
+  if (suv.y < -0.45) { col = select(vec3f(0.12, 0.12, 0.2), vec3f(0.8), fract(x * 0.5) < 0.25 && suv.y < -0.7); }
+  if (abs(c.x) < 5.0 && abs(c.y) < 2.5) {
+    col = vec3f(0.03, 0.04, 0.06);
+    var on = false;
+    for (var e = 0; e < 2; e++) {
+      let d = c - vec2f(select(-3.0, 3.0, e == 1), 0.0);
+      if (abs(d.x) < 2.0 && abs(d.y - (1.0 - abs(d.x))) < 0.1) { on = true; }
+    }
+    if (abs(c.y + 1.5) < 0.1 && abs(c.x) < 1.0) { on = true; }
+    if (on) { col = vec3f(0.75, 0.9, 1.0); }
+  }
+  return col * 1.05;
+}
+
+// pixel face on a 20 x 15 grid of square phosphor cells
+fn face(suv: vec2f, t: f32) -> vec3f {
+  let c = vec2f(floor(suv.x * 10.0) + 0.5, floor(suv.y * 7.5) + 0.5);
+  let state = i32(floor(t / 5.0)) % 4;
+  if (state == 3) { return testCard(suv, c, t); }
+  let look = vec2f(round(1.4 * sin(t * 0.7)), round(0.8 * sin(t * 0.45)));
+  let blink = fract(t / 3.3) > 0.94;
+  var on = 0.0;
+  var pink = 0.0;
+
+  for (var e = 0; e < 2; e++) {
+    let ex = select(-4.0, 4.0, e == 1) + look.x;
+    let d = c - vec2f(ex, 1.0 + look.y);
+    if (state == 1) {
+      if (abs(d.x) < 2.0 && abs(d.y - (1.0 - abs(d.x))) < 0.1) { on = 1.0; }
+    } else if (blink) {
+      if (abs(d.x) < 2.0 && abs(d.y + 0.5) < 0.1) { on = 1.0; }
+    } else {
+      let r = vec2f(1.65, 2.2);
+      if (state == 2) {
+        // fierce eyes: slanted brow cuts the top, brow line above
+        let inward = select(1.0, -1.0, e == 1);
+        let cut = 0.6 - 0.6 * d.x * inward;
+        if (dot(d / r, d / r) < 1.0 && d.y < cut) { on = 1.0; }
+        if (abs(d.x) < 2.0 && abs(d.y - (cut + 1.0)) < 0.5) { on = 1.0; }
+      } else {
+        if (dot(d / r, d / r) < 1.0) { on = 1.0; }
+        if (abs(d.x - 0.5) < 0.1 && abs(d.y - 0.5) < 0.1) { on = 0.0; }
+      }
+    }
+  }
+
+  if (state == 2) {
+    // big roaring mouth with two fangs
+    let md = c - vec2f(0.0, -3.0);
+    if (abs(md.x) < 3.0 && abs(md.y) < 1.6) {
+      if (abs(md.x) > 2.0 || abs(md.y) > 1.0) { on = 1.0; }
+      if (abs(abs(md.x) - 1.5) < 0.1 && abs(md.y - 0.5) < 0.1) { on = 1.0; }
+    }
+  } else {
+    if ((abs(c.y + 3.5) < 0.1 && abs(c.x) < 2.0) || (abs(c.y + 2.5) < 0.1 && abs(abs(c.x) - 2.5) < 0.1)) { on = 1.0; }
+  }
+
+  if (abs(abs(c.x) - 7.0) < 1.0 && abs(c.y + 1.5) < 0.1) { pink = 1.0; }
+
+  let glowC = clamp(1.0 - length(suv) * 0.55, 0.0, 1.0);
+  var col = mix(vec3f(0.02, 0.03, 0.14), vec3f(0.08, 0.16, 0.5), glowC);
+  if (state == 2) { col = mix(vec3f(0.3, 0.02, 0.02), vec3f(0.95, 0.25, 0.05), glowC * (0.75 + 0.25 * sin(t * 30.0))); }
+  col = col + vec3f(0.04, 0.05, 0.1) * smoothstep(0.08, 0.0, abs(fract(suv.y * 0.5 - t * 0.2) - 0.5));
+  col = mix(col, vec3f(1.0, 0.22, 0.2), pink);
+  col = mix(col, select(vec3f(1.0, 0.86, 0.3), vec3f(1.0, 0.95, 0.6), state == 2), on);
+  return col;
+}
+
+fn hash21(p: vec2f) -> f32 { return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453); }
+fn sky(rd: vec3f) -> vec3f {
+  var col = mix(vec3f(0.95, 0.42, 0.1), vec3f(0.12, 0.1, 0.38), smoothstep(-0.05, 0.35, rd.y));
+  col = mix(col, vec3f(0.03, 0.04, 0.16), smoothstep(0.3, 0.9, rd.y));
+  col = col + vec3f(1.0, 0.75, 0.2) * pow(max(0.0, 1.0 - abs(rd.y + 0.02) * 6.0), 3.0) * 0.6;
+  // rising embers
+  let a = atan2(rd.x, rd.z);
+  let g = vec2f(a * 9.0, rd.y * 14.0 - u.time * 0.6);
+  let id = floor(g);
+  let f = fract(g) - 0.5;
+  if (hash21(id) > 0.9) {
+    let off = vec2f(hash21(id + 3.1) - 0.5, hash21(id + 9.7) - 0.5) * 0.5;
+    col = col + vec3f(1.0, 0.6, 0.15) * smoothstep(0.12, 0.0, length(f - off)) * smoothstep(0.7, 0.0, rd.y);
+  }
+  return col;
+}
+
+@fragment
+fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let t = u.time;
+  var uv = (fc.xy - 0.5 * u.res) / u.res.y;
+  uv.y = -uv.y;
+
+  let ta = vec3f(0.0, 0.05, 0.0);
+  let cp = cos(u.pitch);
+  let ro = ta + u.dist * vec3f(cp * sin(u.yaw), sin(u.pitch), cp * cos(u.yaw));
+  let ww = normalize(ta - ro);
+  let uu = normalize(cross(ww, vec3f(0.0, 1.0, 0.0)));
+  let vv = cross(uu, ww);
+  let rd = normalize(uv.x * uu + uv.y * vv + 1.8 * ww);
+
+  // march, tracking closest approach to the object for pixel outlines
+  var tt = 0.0;
+  var hit = false;
+  var mat = 0.0;
+  var minAng = 1e9;
+  for (var i = 0; i < 140; i++) {
+    let h = mapS(ro + rd * tt);
+    minAng = min(minAng, h.z / max(tt, 0.05));
+    if (h.x < 0.0008 * tt) { hit = true; mat = h.y; break; }
+    tt = tt + h.x * 0.9;
+    if (tt > 14.0) { break; }
+  }
+
+  let bg = sky(rd);
+  var col = bg;
+  let L = normalize(vec3f(-0.5, 0.9, 0.6));
+
+  if (hit) {
+    let pos = ro + rd * tt;
+    let n = calcNormal(pos);
+    let v = -rd;
+    let sh = softShadow(pos + n * 0.004, L);
+    let dif = clamp(dot(n, L), 0.0, 1.0) * sh;
+    let toon = floor(dif * 3.0 + 0.5) / 3.0;
+    let amb = 0.32 + 0.22 * n.y;
+    let rim = pow(1.0 - clamp(dot(n, v), 0.0, 1.0), 3.0);
+    let spe = pow(clamp(dot(reflect(-L, n), v), 0.0, 1.0), 24.0) * sh;
+    let lq = bodyXform(pos);
+
+    var alb = vec3f(0.24, 0.24, 0.27);
+    var specAmt = 0.25;
+    var emit = vec3f(0.0);
+
+    if (mat < 1.5) {
+      // bezel lip inside the recess
+      if (lq.z > 0.34 && lq.z < 0.447 && abs(lq.x) < SCR_H.x + 0.05 && abs(lq.y - SCR_C.y) < SCR_H.y + 0.05) {
+        alb = vec3f(0.15, 0.15, 0.16);
+      }
+      // speaker slots below the screen
+      if (lq.z > 0.44 && lq.x > -0.42 && lq.x < 0.16) {
+        let ys = lq.y + 0.34;
+        if (abs(ys) < 0.07 && fract(ys / 0.035 + 0.5) < 0.45) { alb = vec3f(0.1, 0.1, 0.11); }
+      }
+    } else if (mat < 2.5) {
+      let suv = (lq.xy - SCR_C.xy) / SCR_H;
+      emit = face(suv, t) * 1.25;
+      let cq = max(abs(suv) - vec2f(0.8, 0.72), vec2f(0.0));
+      emit = emit * (1.0 - 0.35 * pow(max(abs(suv.x), abs(suv.y)), 6.0)) * (1.0 - smoothstep(0.1, 0.24, length(cq)));
+      alb = vec3f(0.02);
+      specAmt = 0.6;
+    } else if (mat < 3.5) {
+      alb = vec3f(0.34, 0.35, 0.37);
+    } else if (mat < 5.5) {
+      alb = vec3f(0.98, 0.78, 0.4);
+      specAmt = 0.4;
+    } else if (mat < 6.5) {
+      alb = vec3f(0.12, 0.11, 0.12);
+    } else if (mat < 7.5) {
+      emit = vec3f(1.0, 0.25, 0.1) * (0.6 + 0.4 * step(0.5, fract(t * 0.5)));
+    } else if (mat < 8.5) {
+      let chk = (floor(pos.x * 2.5) + floor(pos.z * 2.5)) % 2.0;
+      alb = mix(vec3f(0.62, 0.1, 0.09), vec3f(0.12, 0.12, 0.32), abs(chk));
+      specAmt = 0.0;
+    } else {
+      alb = vec3f(1.0, 0.45, 0.62);
+    }
+
+    col = alb * (amb * vec3f(0.4, 0.42, 0.85) + 1.15 * toon * vec3f(1.0, 0.82, 0.55));
+    col = col + rim * vec3f(0.25, 0.6, 1.0) * 0.55 * step(mat, 7.5);
+    col = col + spe * specAmt * vec3f(1.0, 0.95, 0.9);
+    col = col + emit;
+
+    if (mat > 7.5 && mat < 8.5) {
+      // teal spill from the screen onto the floor
+      let sp = vec3f(0.0, 0.1, 0.5) - pos;
+      let glow = 0.5 / (1.0 + 4.0 * dot(sp, sp)) * smoothstep(0.1, 0.6, pos.z);
+      col = col + vec3f(0.3, 0.45, 1.0) * glow;
+      col = mix(col, bg, 1.0 - exp(-0.012 * tt * tt));
+    }
+  }
+  // pixel outline around the silhouette (against floor or sky)
+  if (!hit || (mat > 7.5 && mat < 8.5)) {
+    let px = 1.0 / (u.res.y * 1.8);
+    if (minAng < 1.3 * px) { col = vec3f(0.03, 0.03, 0.12); }
+  }
+
+  // vignette, gamma, ordered dither to a small palette
+  let q = fc.xy / u.res;
+  col = col * (0.6 + 0.4 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.25));
+  let lum = dot(col, vec3f(0.299, 0.587, 0.114));
+  col = mix(vec3f(lum), col, 1.3);
+  col = pow(clamp(col, vec3f(0.0), vec3f(1.0)), vec3f(0.4545));
+  let b = bayer4(fc.xy) - 0.5;
+  let levels = 7.0;
+  col = floor(col * levels + 0.5 + b * 0.9) / levels;
+  return vec4f(col, 1.0);
+}
+`;
+
+const canvas = document.getElementById('c');
+const fallback = document.getElementById('fallback');
+const fallbackMsg = document.getElementById('fallback-msg');
+function showFallback(msg) { fallback.style.display = 'grid'; if (msg) fallbackMsg.textContent = msg; }
+
+const DEFAULT = { x: 0.85, yaw: 0.5, pitch: 0.14, dist: 3.4 };
+const cam = { ...DEFAULT };
+let autoSway = true, paused = false, simTime = 0, swayT = 0;
+const PIX = [{ h: 120, name: 'chunky' }, { h: 180, name: 'medium' }, { h: 280, name: 'fine' }];
+let pixIdx = 0;
+
+async function init() {
+  if (!navigator.gpu) { showFallback(); return; }
+  let adapter;
+  try { adapter = await navigator.gpu.requestAdapter(); } catch (e) {}
+  if (!adapter) { showFallback(); return; }
+  const device = await adapter.requestDevice();
+  device.lost.then(info => showFallback('The GPU device was lost (' + (info.message || 'unknown reason') + '). Reload the page to try again.'));
+
+  const ctx = canvas.getContext('webgpu');
+  const format = navigator.gpu.getPreferredCanvasFormat();
+  ctx.configure({ device, format, alphaMode: 'opaque' });
+
+  const module = device.createShaderModule({ code: WGSL });
+  const info = await module.getCompilationInfo();
+  const errs = info.messages.filter(m => m.type === 'error');
+  if (errs.length) {
+    console.error(errs);
+    showFallback('Shader failed to compile: ' + errs.map(e => `line ${e.lineNum}: ${e.message}`).join('; '));
+    return;
+  }
+
+  const pipeline = device.createRenderPipeline({
+    layout: 'auto',
+    vertex: { module, entryPoint: 'vs' },
+    fragment: { module, entryPoint: 'fs', targets: [{ format }] },
+    primitive: { topology: 'triangle-list' },
+  });
+  const ubuf = device.createBuffer({ size: 32, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const bind = device.createBindGroup({
+    layout: pipeline.getBindGroupLayout(0),
+    entries: [{ binding: 0, resource: { buffer: ubuf } }],
+  });
+  const data = new Float32Array(8);
+
+  function resize() {
+    const H = PIX[pixIdx].h;
+    const aspect = Math.max(canvas.clientWidth, 1) / Math.max(canvas.clientHeight, 1);
+    const w = Math.max(1, Math.round(H * aspect));
+    if (canvas.width !== w || canvas.height !== H) { canvas.width = w; canvas.height = H; }
+  }
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last = performance.now();
+  let onStage = true;
+  const stageEl = document.querySelector('.stage');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => { onStage = entries[0].isIntersecting; }, { threshold: 0.05 }).observe(stageEl);
+  }
+  function frame(now) {
+    const dt = Math.min(now - last, 100);
+    last = now;
+    if (!paused && onStage) {
+      simTime += (dt / 1000) * (reduceMotion ? 0.35 : 1);
+      if (autoSway) swayT += dt / 1000;
+    }
+    resize();
+    data[0] = canvas.width; data[1] = canvas.height; data[2] = simTime;
+    data[3] = cam.x + cam.yaw + (autoSway ? 0.5 * Math.sin(swayT * 0.3) : 0);
+    data[4] = cam.pitch; data[5] = cam.dist;
+    device.queue.writeBuffer(ubuf, 0, data);
+    const enc = device.createCommandEncoder();
+    const pass = enc.beginRenderPass({
+      colorAttachments: [{ view: ctx.getCurrentTexture().createView(), loadOp: 'clear', storeOp: 'store', clearValue: { r: 0, g: 0, b: 0, a: 1 } }],
+    });
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bind);
+    pass.draw(3);
+    pass.end();
+    device.queue.submit([enc.finish()]);
+    if (onStage) { requestAnimationFrame(frame); } else { setTimeout(frame, 250); }
+  }
+  requestAnimationFrame(frame);
+}
+
+// orbit controls
+const pointers = new Map();
+let pinchStart = 0, distStart = 0, idleTimer;
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (autoSway) { cam.yaw += 0.5 * Math.sin(swayT * 0.3); swayT = 0; }
+  autoSway = false; clearTimeout(idleTimer);
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()];
+    pinchStart = Math.hypot(a.x - b.x, a.y - b.y); distStart = cam.dist;
+  }
+});
+canvas.addEventListener('pointermove', e => {
+  if (!pointers.has(e.pointerId)) return;
+  const prev = pointers.get(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 1) {
+    cam.yaw -= (e.clientX - prev.x) * 0.006;
+    cam.pitch = Math.max(-0.05, Math.min(1.2, cam.pitch + (e.clientY - prev.y) * 0.005));
+  } else if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    cam.dist = Math.max(2.0, Math.min(7, distStart * pinchStart / Math.max(d, 1)));
+  }
+});
+function endPointer(e) {
+  pointers.delete(e.pointerId);
+  if (pointers.size === 0) idleTimer = setTimeout(() => { autoSway = true; }, 4000);
+}
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  cam.dist = Math.max(2.0, Math.min(7, cam.dist * Math.exp(e.deltaY * 0.001)));
+}, { passive: false });
+
+const pixBtn = document.getElementById('pix');
+pixBtn.addEventListener('click', () => {
+  pixIdx = (pixIdx + 1) % PIX.length;
+  pixBtn.textContent = 'Pixels: ' + PIX[pixIdx].name;
+});
+const pauseBtn = document.getElementById('pause');
+pauseBtn.addEventListener('click', () => { paused = !paused; pauseBtn.textContent = paused ? 'Play' : 'Pause'; });
+document.getElementById('reset').addEventListener('click', () => { Object.assign(cam, DEFAULT); swayT = 0; autoSway = true; });
+
+init().catch(err => { console.error(err); showFallback('WebGPU failed to start: ' + err.message); });
+</script>
+</body>
+</html>

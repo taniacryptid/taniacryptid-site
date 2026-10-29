@@ -1,0 +1,26 @@
+{
+  "name": "repo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "vendor:identity": "esbuild scripts/identity-entry.js --bundle --format=esm --minify --platform=browser --outfile=public/js/identity.js",
+    "vendor:marked": "esbuild node_modules/marked/lib/marked.esm.js --bundle --format=esm --minify --outfile=public/js/marked.js",
+    "vendor": "npm run vendor:identity && npm run vendor:marked"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.7",
+    "@netlify/database": "^2.0.1",
+    "@netlify/functions": "^6.0.3",
+    "@netlify/identity": "^2.0.0",
+    "drizzle-orm": "^1.0.0-beta.22",
+    "marked": "^18.1.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^1.0.0-beta.22",
+    "esbuild": "^0.28.2"
+  }
+}

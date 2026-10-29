@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin log in · taniacryptid</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d1236">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  .login { max-width: 440px; margin: 4vh auto 0; }
+  .login h1 { font-size: clamp(38px, 6vw, 52px); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <a class="brand" href="/">taniacryptid</a>
+  <nav aria-label="Main"><a href="/blog">blog</a></nav>
+</header>
+<main class="wrap">
+  <section class="login">
+    <p class="overline">CH 00 / control room</p>
+    <h1 id="title">Admin log in</h1>
+    <div class="panel">
+      <p class="msg" id="msg" hidden></p>
+
+      <!-- email + password -->
+      <form id="login-form">
+        <div class="field"><label for="email">Email</label><input type="email" id="email" autocomplete="username" required></div>
+        <div class="field"><label for="password">Password</label><input type="password" id="password" autocomplete="current-password" required></div>
+        <div class="row">
+          <button class="btn" type="submit">Log in</button>
+          <button class="linkish" type="button" id="forgot">Forgot password?</button>
+        </div>
+      </form>
+
+      <!-- set a password (after an invite or a reset link) -->
+      <form id="password-form" hidden>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input type="password" id="new-password" autocomplete="new-password" minlength="8" required>
+          <p class="hint">At least 8 characters.</p>
+        </div>
+        <button class="btn" type="submit">Save password</button>
+      </form>
+
+      <!-- already logged in -->
+      <div id="signed-in" hidden>
+        <p id="who" style="margin-top:0"></p>
+        <div class="row">
+          <a class="btn" href="/admin" id="to-admin">Go to the editor</a>
+          <button class="linkish" type="button" id="logout">Log out</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot">© 2026 taniacryptid</footer>
+<script type="module">
+import {
+  login, logout, getUser, handleAuthCallback, acceptInvite, updateUser,
+  requestPasswordRecovery, AuthError, MissingIdentityError,
+} from '/js/identity.js';
+
+const $ = id => document.getElementById(id);
+const msgEl = $('msg');
+const show = (text, kind = 'err') => { msgEl.textContent = text; msgEl.className = `msg ${kind}`; msgEl.hidden = !text; };
+const errText = err => {
+  if (err instanceof MissingIdentityError) return 'Logins aren’t switched on for this site yet.';
+  if (err instanceof AuthError && err.status === 401) return 'That email and password don’t match.';
+  return err?.message || 'Something went wrong. Try again.';
+};
+const isAdmin = user => !!user?.roles?.includes('admin');
+const next = new URLSearchParams(location.search).get('next') || '/admin';
+
+function view(name) {
+  $('login-form').hidden = name !== 'login';
+  $('password-form').hidden = name !== 'password';
+  $('signed-in').hidden = name !== 'signed-in';
+}
+
+function signedIn(user) {
+  if (isAdmin(user)) { location.replace(next.startsWith('/') ? next : '/admin'); return; }
+  $('title').textContent = 'Logged in';
+  $('who').textContent = `Signed in as ${user.email}. This account doesn’t have the admin role yet, so it can’t edit the blog.`;
+  $('to-admin').hidden = true;
+  view('signed-in');
+}
+
+// invite + reset links land here with a token in the URL hash
+let inviteToken = null;
+try {
+  const result = await handleAuthCallback();
+  if (result?.type === 'invite') {
+    inviteToken = result.token;
+    $('title').textContent = 'Welcome aboard';
+    show('Choose a password to finish setting up your account.', 'ok');
+    view('password');
+  } else if (result?.type === 'recovery') {
+    $('title').textContent = 'Reset password';
+    show('Pick a new password.', 'ok');
+    view('password');
+  } else if (result?.user) {
+    signedIn(result.user);
+  } else {
+    const user = await getUser();
+    if (user) signedIn(user); else view('login');
+  }
+} catch (err) {
+  show(errText(err));
+  view('login');
+}
+
+$('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = e.submitter; btn.disabled = true; show('');
+  try {
+    signedIn(await login($('email').value.trim(), $('password').value));
+  } catch (err) {
+    show(errText(err));
+  } finally { btn.disabled = false; }
+});
+
+$('password-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = e.submitter; btn.disabled = true; show('');
+  try {
+    const pw = $('new-password').value;
+    const user = inviteToken ? await acceptInvite(inviteToken, pw) : await updateUser({ password: pw });
+    show('Password saved.', 'ok');
+    signedIn(user);
+  } catch (err) {
+    show(errText(err));
+  } finally { btn.disabled = false; }
+});
+
+$('forgot').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  if (!email) { show('Enter your email above first.'); $('email').focus(); return; }
+  try {
+    await requestPasswordRecovery(email);
+    show('If that account exists, a reset link is on its way.', 'ok');
+  } catch (err) { show(errText(err)); }
+});
+
+$('logout').addEventListener('click', async () => {
+  await logout().catch(() => {});
+  location.reload();
+});
+</script>
+</body>
+</html>

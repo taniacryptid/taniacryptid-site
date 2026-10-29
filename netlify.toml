@@ -1,0 +1,26 @@
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+
+# Blog cover images: uploads live in Blobs and are resized by the Image CDN
+[[redirects]]
+  from = "/img/cover/:key"
+  to = "/.netlify/images?url=/uploads/:key&w=1200&fm=webp"
+  status = 200
+
+[[redirects]]
+  from = "/img/card/:key"
+  to = "/.netlify/images?url=/uploads/:key&w=680&fm=webp"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
