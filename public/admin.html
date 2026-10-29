@@ -247,7 +247,7 @@
         </div>
         <div class="panel">
           <label>Photo</label>
-          <div class="photo-box" id="a-photo-box">No photo. CRT Buddy shows instead.</div>
+          <div class="photo-box" id="a-photo-box">No photo. The homepage TV photo shows instead.</div>
           <div class="acts">
             <button class="btn alt" type="button" id="a-photo-btn">Upload</button>
             <button class="btn danger" type="button" id="a-photo-remove" hidden>Remove</button>
@@ -501,7 +501,7 @@ let photo = null;
 
 function setPhoto(key) {
   photo = key;
-  $('a-photo-box').innerHTML = key ? `<img src="${imgUrl(key, 'card')}" alt="Photo preview">` : 'No photo. CRT Buddy shows instead.';
+  $('a-photo-box').innerHTML = key ? `<img src="${imgUrl(key, 'card')}" alt="Photo preview">` : 'No photo. The homepage TV photo shows instead.';
   $('a-photo-remove').hidden = !key;
 }
 
