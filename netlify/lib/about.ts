@@ -1,8 +1,6 @@
-import { eq } from "drizzle-orm";
 import { marked } from "marked";
-import { db } from "../../db/index.js";
-import { pages } from "../../db/schema.js";
 import { coverUrl, esc } from "./html.js";
+import { list, loadPage, storePage, str } from "./pages.js";
 
 // Everything on the About page that can be changed from the admin editor.
 // Bio, directive text and log entries accept Markdown.
@@ -50,11 +48,8 @@ Off the clock I'm pulled toward stories of every kind: late-night creature featu
   signoff: "Usually with a new post, a new stream or a new thing to show off. Until then, come say hello.",
 };
 
-const str = (v: unknown, max = 5000) => String(v ?? "").trim().slice(0, max);
-
 // Normalise whatever the editor sends into a valid About document
 export function cleanAbout(input: Partial<About>): About {
-  const list = <T>(v: unknown) => (Array.isArray(v) ? (v as T[]) : []);
   return {
     tagline: str(input.tagline, 300),
     photo: input.photo ? str(input.photo, 500) : null,
@@ -74,21 +69,8 @@ export function cleanAbout(input: Partial<About>): About {
   };
 }
 
-export async function getAbout(): Promise<About & { updatedAt: Date | null }> {
-  const [row] = await db.select().from(pages).where(eq(pages.slug, "about")).limit(1);
-  if (!row) return { ...defaultAbout, updatedAt: null };
-  return { ...defaultAbout, ...(row.content as Partial<About>), updatedAt: row.updatedAt };
-}
-
-export async function saveAbout(about: About) {
-  const now = new Date();
-  const [row] = await db
-    .insert(pages)
-    .values({ slug: "about", content: about, updatedAt: now })
-    .onConflictDoUpdate({ target: pages.slug, set: { content: about, updatedAt: now } })
-    .returning();
-  return { ...(row.content as About), updatedAt: row.updatedAt };
-}
+export const getAbout = () => loadPage("about", defaultAbout);
+export const saveAbout = (about: About) => storePage("about", about);
 
 const md = (s: string) => marked.parse(s, { async: false }) as string;
 const mdInline = (s: string) => marked.parseInline(s, { async: false }) as string;

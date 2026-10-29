@@ -65,6 +65,11 @@
   .rep-row .btn { padding: 6px 10px; font-size: 14px; }
   .photo-box { aspect-ratio: 4 / 5; max-width: 200px; border-radius: 12px; border: 2px dashed #2c2f6e; display: grid; place-items: center; overflow: hidden; background: var(--bg); margin-bottom: 10px; color: var(--muted); font-size: 14px; text-align: center; padding: 8px; }
   .photo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rep-row .trio { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  .check { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .check input { width: 20px; height: 20px; }
+  .photo-box.wide { aspect-ratio: 4 / 3; max-width: none; }
+  @media (max-width: 600px) { .rep-row .trio { grid-template-columns: 1fr; } }
   @media (max-width: 600px) { .rep-row .pair { grid-template-columns: 1fr; } }
 
   @media (max-width: 859px) {
@@ -78,7 +83,7 @@
 <body>
 <header class="masthead">
   <a class="brand" href="/">taniacryptid</a>
-  <nav aria-label="Main"><a href="/blog">blog</a><a href="/about">about</a><a href="/admin">editor</a></nav>
+  <nav aria-label="Main"><a href="/blog">blog</a><a href="/about">about</a><a href="/community">community</a><a href="/livestreams">livestreams</a><a href="/admin">editor</a></nav>
 </header>
 <main class="wrap">
   <p class="msg" id="msg" hidden></p>
@@ -104,6 +109,26 @@
       <div class="acts">
         <a class="btn" href="#about">Edit About</a>
         <a class="btn alt" href="/about" target="_blank" rel="noopener">View</a>
+      </div>
+    </div>
+    <div class="panel about-card">
+      <div>
+        <h3>Community page</h3>
+        <p class="meta" id="community-meta">Latest program spotlight and highlight links</p>
+      </div>
+      <div class="acts">
+        <a class="btn" href="#community">Edit Community</a>
+        <a class="btn alt" href="/community" target="_blank" rel="noopener">View</a>
+      </div>
+    </div>
+    <div class="panel about-card">
+      <div>
+        <h3>Livestreams page</h3>
+        <p class="meta" id="livestreams-meta">Schedule, replays and where to watch</p>
+      </div>
+      <div class="acts">
+        <a class="btn" href="#livestreams">Edit Livestreams</a>
+        <a class="btn alt" href="/livestreams" target="_blank" rel="noopener">View</a>
       </div>
     </div>
     <ul class="rows" id="rows"></ul>
@@ -258,6 +283,187 @@
       </aside>
     </div>
   </form>
+  <!-- community page editor -->
+  <form id="community-view" class="about-form" hidden>
+    <div class="bar">
+      <div>
+        <a class="back" href="#" data-back style="margin-bottom:8px">← All posts</a>
+        <h1>Community page</h1>
+      </div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h2>Intro</h2>
+          <div class="field">
+            <label for="c-tagline">Tagline</label>
+            <input type="text" id="c-tagline" data-f="tagline" maxlength="300" placeholder="The poster tagline under the big COMMUNITY title">
+          </div>
+          <div class="field">
+            <label for="c-intro">Intro</label>
+            <textarea id="c-intro" data-f="intro" style="min-height:140px"></textarea>
+            <p class="hint">A few sentences about the community work you do, in Markdown. Leave empty to hide.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Latest program</h2>
+          <p class="hint">The big spotlight card. Use it for whatever program is running now.</p>
+          <div class="field">
+            <label for="c-sp-label">Small label</label>
+            <input type="text" id="c-sp-label" data-f="spotlight.label" maxlength="60" placeholder="Now showing">
+          </div>
+          <div class="field">
+            <label for="c-sp-title">Program name</label>
+            <input type="text" id="c-sp-title" data-f="spotlight.title" maxlength="160">
+          </div>
+          <div class="field">
+            <label for="c-sp-host">Where it runs</label>
+            <input type="text" id="c-sp-host" data-f="spotlight.host" maxlength="80" placeholder="Netlify">
+          </div>
+          <div class="field">
+            <label for="c-sp-blurb">Blurb</label>
+            <textarea id="c-sp-blurb" data-f="spotlight.blurb" style="min-height:160px"></textarea>
+            <p class="hint">Who it’s for, what happens and how to join. Markdown works.</p>
+          </div>
+          <div class="field">
+            <label for="c-sp-link">Button link</label>
+            <input type="url" id="c-sp-link" data-f="spotlight.link" maxlength="1000" placeholder="https://… (leave empty to hide the button)">
+          </div>
+          <div class="field">
+            <label for="c-sp-linklabel">Button text</label>
+            <input type="text" id="c-sp-linklabel" data-f="spotlight.linkLabel" maxlength="60" placeholder="Learn more">
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Latest sightings</h2>
+          <p class="hint">Program highlights as links: the latest newsletter issue, a recap post, a recording. Newest first works best.</p>
+          <div class="rep" id="c-hl"></div>
+          <button class="btn alt" type="button" data-add="hl">+ Add highlight</button>
+        </div>
+
+        <div class="panel">
+          <h2>Sign-off</h2>
+          <div class="field">
+            <label for="c-signoff-title">Big closing line</label>
+            <input type="text" id="c-signoff-title" data-f="signoffTitle" maxlength="120" placeholder="Join the rampage.">
+          </div>
+          <div class="field">
+            <label for="c-signoff">Closing text</label>
+            <input type="text" id="c-signoff" data-f="signoff" maxlength="1000">
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel stack">
+          <p class="status-line" data-status>Loading…</p>
+          <button class="btn" type="submit">Save changes</button>
+          <a class="btn alt" href="/community" target="_blank" rel="noopener">View page ↗</a>
+        </div>
+        <div class="panel">
+          <label>Program photo</label>
+          <div class="photo-box wide" id="c-photo-box"></div>
+          <div class="acts">
+            <button class="btn alt" type="button" id="c-photo-btn">Upload</button>
+            <button class="btn danger" type="button" id="c-photo-remove" hidden>Remove</button>
+          </div>
+          <p class="hint">Shown in the spotlight card with a teal poster tint. Landscape (4:3) works best.</p>
+        </div>
+        <button class="btn danger" type="button" data-reset>Reset to original text</button>
+      </aside>
+    </div>
+  </form>
+
+  <!-- livestreams page editor -->
+  <form id="livestreams-view" class="about-form" hidden>
+    <div class="bar">
+      <div>
+        <a class="back" href="#" data-back style="margin-bottom:8px">← All posts</a>
+        <h1>Livestreams page</h1>
+      </div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h2>Intro</h2>
+          <div class="field">
+            <label for="l-tagline">Tagline</label>
+            <input type="text" id="l-tagline" data-f="tagline" maxlength="300">
+          </div>
+          <div class="field">
+            <label for="l-intro">Intro</label>
+            <textarea id="l-intro" data-f="intro" style="min-height:140px"></textarea>
+            <p class="hint">Markdown. Leave empty to hide.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>On air now</h2>
+          <p class="hint">Turn this on while you’re live to show a red banner at the top of the page. Turn it off when you’re done.</p>
+          <div class="field">
+            <label class="check"><input type="checkbox" id="l-live-on" data-f="live.on"> Show the “On air now” banner</label>
+          </div>
+          <div class="field">
+            <label for="l-live-title">What’s on</label>
+            <input type="text" id="l-live-title" data-f="live.title" maxlength="160">
+          </div>
+          <div class="field">
+            <label for="l-live-url">Watch link</label>
+            <input type="url" id="l-live-url" data-f="live.url" maxlength="1000" placeholder="https://…">
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Schedule</h2>
+          <p class="hint">Upcoming streams show under “Coming up” and move to “Reruns” two hours after they start. Times are in your time zone; visitors see them in theirs. Add a replay link once a stream is over.</p>
+          <div class="rep" id="l-listings"></div>
+          <button class="btn alt" type="button" data-add="listings">+ Add stream</button>
+        </div>
+
+        <div class="panel">
+          <h2>Featured presentation</h2>
+          <p class="hint">One replay to show in the big TV. YouTube links play right on the page. Leave the link empty to hide it.</p>
+          <div class="field">
+            <label for="l-feat-title">Title</label>
+            <input type="text" id="l-feat-title" data-f="featured.title" maxlength="160">
+          </div>
+          <div class="field">
+            <label for="l-feat-url">Video link</label>
+            <input type="url" id="l-feat-url" data-f="featured.url" maxlength="1000" placeholder="https://www.youtube.com/watch?v=…">
+          </div>
+          <div class="field">
+            <label for="l-feat-note">Note</label>
+            <input type="text" id="l-feat-note" data-f="featured.note" maxlength="1000">
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Where I’m on air</h2>
+          <p class="hint">Channels you stream on right now, like your work’s YouTube or Twitch. Remove them all to hide the section.</p>
+          <div class="rep" id="l-watch"></div>
+          <button class="btn alt" type="button" data-add="watch">+ Add channel</button>
+        </div>
+
+        <div class="panel">
+          <h2>My own channels</h2>
+          <p class="hint">Your personal accounts, shown under “Public access”.</p>
+          <div class="rep" id="l-chans"></div>
+          <button class="btn alt" type="button" data-add="chans">+ Add account</button>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel stack">
+          <p class="status-line" data-status>Loading…</p>
+          <button class="btn" type="submit">Save changes</button>
+          <a class="btn alt" href="/livestreams" target="_blank" rel="noopener">View page ↗</a>
+        </div>
+        <button class="btn danger" type="button" data-reset>Reset to original text</button>
+      </aside>
+    </div>
+  </form>
   <input type="file" id="file-in" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
 </main>
 <script type="module">
@@ -314,12 +520,18 @@ function route() {
   show('');
   const m = location.hash.match(/^#edit=(\d+)$/);
   if (location.hash === '#about') openAbout();
+  else if (location.hash === '#community' || location.hash === '#livestreams') openPage(location.hash.slice(1));
   else if (location.hash === '#new') openEditor(null);
   else if (m) openEditor(Number(m[1]));
   else showList();
 }
 
 addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+const views = ['list-view', 'edit-view', 'about-view', 'community-view', 'livestreams-view'];
+const showView = id => views.forEach(v => { $(v).hidden = v !== id; });
+document.querySelectorAll('[data-back]').forEach(a => a.addEventListener('click', e => {
+  if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
+}));
 $('about-back').addEventListener('click', e => {
   if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
 });
@@ -330,12 +542,10 @@ $('back-link').addEventListener('click', e => {
 // ---------- list ----------
 async function showList() {
   dirty = false;
-  $('edit-view').hidden = true;
-  $('about-view').hidden = true;
-  $('list-view').hidden = false;
-  api('/api/pages/about').then(a => {
-    $('about-meta').textContent = a.updatedAt ? `Edited ${new Date(a.updatedAt).toLocaleString()}` : 'Showing the original text. Not edited yet.';
-  }).catch(() => {});
+  showView('list-view');
+  ['about', 'community', 'livestreams'].forEach(slug => api(`/api/pages/${slug}`).then(a => {
+    $(`${slug}-meta`).textContent = a.updatedAt ? `Edited ${new Date(a.updatedAt).toLocaleString()}` : 'Showing the original text. Not edited yet.';
+  }).catch(() => {}));
   document.title = 'Blog editor · taniacryptid';
   try {
     const posts = await api('/api/posts?all=1');
@@ -377,9 +587,7 @@ function setStatus(post) {
 }
 
 async function openEditor(id) {
-  $('list-view').hidden = true;
-  $('about-view').hidden = true;
-  $('edit-view').hidden = false;
+  showView('edit-view');
   showTab('write');
   let post = null;
   if (id !== null) {
@@ -477,13 +685,14 @@ $('file-in').addEventListener('change', async e => {
   const file = e.target.files[0];
   e.target.value = '';
   if (!file) return;
-  const btn = { cover: $('cover-btn'), photo: $('a-photo-btn'), body: $('insert-img') }[uploadTarget];
+  const btn = { cover: $('cover-btn'), photo: $('a-photo-btn'), 'c-photo': $('c-photo-btn'), body: $('insert-img') }[uploadTarget];
   const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Uploading…';
   try {
     const { key } = await upload(file);
     if (uploadTarget === 'cover') setCover(key);
     else if (uploadTarget === 'photo') setPhoto(key);
+    else if (uploadTarget === 'c-photo') setCommPhoto(key);
     else {
       const ta = fields.body;
       const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
@@ -518,7 +727,41 @@ const kinds = {
   log: { box: 'a-log', blank: '', html: v => `<div class="stack2">
       <textarea data-k="text" maxlength="2000" aria-label="Log entry" placeholder="What happened?">${esc(v)}</textarea>
     </div>` },
+  hl: { box: 'c-hl', blank: { kind: '', date: '', title: '', url: '', note: '' }, html: v => `<div class="stack2">
+      <div class="pair">
+        <input type="text" data-k="kind" maxlength="40" aria-label="Kind" placeholder="Kind, e.g. Newsletter" value="${esc(v.kind)}">
+        <input type="date" data-k="date" aria-label="Date" value="${esc(v.date)}">
+      </div>
+      <input type="text" data-k="title" maxlength="200" aria-label="Title" placeholder="Title, e.g. Issue 12: the spooky one" value="${esc(v.title)}">
+      <input type="url" data-k="url" maxlength="1000" aria-label="Link" placeholder="https://…" value="${esc(v.url)}">
+      <input type="text" data-k="note" maxlength="500" aria-label="Short note" placeholder="Short note (optional)" value="${esc(v.note)}">
+    </div>` },
+  listings: { box: 'l-listings', blank: { start: '', title: '', where: '', url: '', note: '' }, html: v => `<div class="stack2">
+      <div class="pair">
+        <input type="datetime-local" data-k="start" aria-label="Start time" value="${esc(toLocalInput(v.start))}">
+        <input type="text" data-k="where" maxlength="80" aria-label="Where" placeholder="Where, e.g. Netlify on YouTube" value="${esc(v.where)}">
+      </div>
+      <input type="text" data-k="title" maxlength="160" aria-label="Stream title" placeholder="Stream title" value="${esc(v.title)}">
+      <input type="url" data-k="url" maxlength="1000" aria-label="Watch or replay link" placeholder="Watch or replay link" value="${esc(v.url)}">
+      <input type="text" data-k="note" maxlength="500" aria-label="Short description" placeholder="Short description (optional)" value="${esc(v.note)}">
+    </div>`, read: v => ({ ...v, start: v.start ? new Date(v.start).toISOString() : '' }) },
+  watch: { box: 'l-watch', blank: { name: '', url: '', note: '' }, html: v => `<div class="trio">
+      <input type="text" data-k="name" maxlength="80" aria-label="Channel name" placeholder="Channel name" value="${esc(v.name)}">
+      <input type="url" data-k="url" maxlength="1000" aria-label="Link" placeholder="https://…" value="${esc(v.url)}">
+      <input type="text" data-k="note" maxlength="300" aria-label="Note" placeholder="Note, e.g. Weekly showcases" value="${esc(v.note)}">
+    </div>` },
+  chans: { box: 'l-chans', blank: { name: '', handle: '', url: '' }, html: v => `<div class="trio">
+      <input type="text" data-k="name" maxlength="60" aria-label="Platform" placeholder="Platform" value="${esc(v.name)}">
+      <input type="text" data-k="handle" maxlength="80" aria-label="Handle" placeholder="@handle" value="${esc(v.handle)}">
+      <input type="url" data-k="url" maxlength="1000" aria-label="Link" placeholder="https://…" value="${esc(v.url)}">
+    </div>` },
 };
+// datetime-local inputs work in the browser's time zone; the page stores UTC
+function toLocalInput(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
 function addRow(kind, value = kinds[kind].blank) {
   const row = document.createElement('div');
   row.className = 'rep-row';
@@ -533,7 +776,8 @@ function addRow(kind, value = kinds[kind].blank) {
 function readRows(kind) {
   return [...$(kinds[kind].box).children].map(row => {
     const vals = Object.fromEntries([...row.querySelectorAll('[data-k]')].map(el => [el.dataset.k, el.value]));
-    return kind === 'log' ? vals.text : vals;
+    if (kind === 'log') return vals.text;
+    return kinds[kind].read ? kinds[kind].read(vals) : vals;
   });
 }
 Object.keys(kinds).forEach(kind => {
@@ -550,6 +794,9 @@ Object.keys(kinds).forEach(kind => {
     }
   });
 });
+document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+  addRow(b.dataset.add).querySelector('input, textarea').focus(); dirty = true;
+}));
 $('a-add-spec').addEventListener('click', () => { addRow('specs').querySelector('input').focus(); dirty = true; });
 $('a-add-dir').addEventListener('click', () => { addRow('dirs').querySelector('input').focus(); dirty = true; });
 $('a-add-log').addEventListener('click', () => { addRow('log').querySelector('textarea').focus(); dirty = true; });
@@ -562,7 +809,7 @@ function fillAbout(a) {
   af.signoffTitle.value = a.signoffTitle ?? '';
   af.signoff.value = a.signoff ?? '';
   setPhoto(a.photo ?? null);
-  Object.values(kinds).forEach(k => $(k.box).replaceChildren());
+  ['specs', 'dirs', 'log'].forEach(k => $(kinds[k].box).replaceChildren());
   (a.specs ?? []).forEach(v => addRow('specs', v));
   (a.directives ?? []).forEach(v => addRow('dirs', v));
   (a.log ?? []).forEach(v => addRow('log', v));
@@ -571,9 +818,7 @@ function fillAbout(a) {
 }
 
 async function openAbout() {
-  $('list-view').hidden = true;
-  $('edit-view').hidden = true;
-  $('about-view').hidden = false;
+  showView('about-view');
   showAboutTab('write');
   document.title = 'About page · taniacryptid';
   $('a-status').textContent = 'Loading…';
@@ -618,6 +863,81 @@ $('a-reset').addEventListener('click', async () => {
 
 $('a-photo-btn').addEventListener('click', () => { uploadTarget = 'photo'; $('file-in').click(); });
 $('a-photo-remove').addEventListener('click', () => { setPhoto(null); dirty = true; });
+
+// ---------- community + livestreams editors ----------
+// Plain fields carry data-f="path.to.value"; repeatable rows map to a key in the page document
+const pageForms = {
+  community: { rows: { highlights: 'hl' }, label: 'Community page' },
+  livestreams: { rows: { listings: 'listings', watchAt: 'watch', channels: 'chans' }, label: 'Livestreams page' },
+};
+let commPhoto = null;
+function setCommPhoto(key) {
+  commPhoto = key;
+  $('c-photo-box').innerHTML = key ? `<img src="${imgUrl(key, 'card')}" alt="Photo preview">` : 'No photo. A still from the homepage TV shows instead.';
+  $('c-photo-remove').hidden = !key;
+}
+$('c-photo-btn').addEventListener('click', () => { uploadTarget = 'c-photo'; $('file-in').click(); });
+$('c-photo-remove').addEventListener('click', () => { setCommPhoto(null); dirty = true; });
+
+const getPath = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj);
+function setPath(obj, path, value) {
+  const keys = path.split('.'), last = keys.pop();
+  keys.reduce((o, k) => (o[k] ??= {}), obj)[last] = value;
+}
+
+function fillPage(slug, data) {
+  const form = $(`${slug}-view`);
+  form.querySelectorAll('[data-f]').forEach(el => {
+    const v = getPath(data, el.dataset.f);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v ?? '';
+  });
+  Object.entries(pageForms[slug].rows).forEach(([key, kind]) => {
+    $(kinds[kind].box).replaceChildren();
+    (data[key] ?? []).forEach(v => addRow(kind, v));
+  });
+  if (slug === 'community') setCommPhoto(data.spotlight?.photo ?? null);
+  form.querySelector('[data-status]').textContent = data.updatedAt ? `Saved ${new Date(data.updatedAt).toLocaleString()}` : 'Showing the original text';
+  dirty = false;
+}
+
+function readPage(slug) {
+  const out = {};
+  $(`${slug}-view`).querySelectorAll('[data-f]').forEach(el => setPath(out, el.dataset.f, el.type === 'checkbox' ? el.checked : el.value));
+  Object.entries(pageForms[slug].rows).forEach(([key, kind]) => { out[key] = readRows(kind); });
+  if (slug === 'community') out.spotlight.photo = commPhoto;
+  return out;
+}
+
+async function openPage(slug) {
+  showView(`${slug}-view`);
+  document.title = `${pageForms[slug].label} · taniacryptid`;
+  $(`${slug}-view`).querySelector('[data-status]').textContent = 'Loading…';
+  try { fillPage(slug, await api(`/api/pages/${slug}`)); }
+  catch (err) { showErr(err); }
+}
+
+Object.keys(pageForms).forEach(slug => {
+  const form = $(`${slug}-view`);
+  form.addEventListener('input', () => { dirty = true; });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = form.querySelector('[type=submit]');
+    btn.disabled = true;
+    show('');
+    try {
+      fillPage(slug, await api(`/api/pages/${slug}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(readPage(slug)) }));
+      show(`${pageForms[slug].label} saved. It’s live now.`, 'ok');
+    } catch (err) { showErr(err); }
+    finally { btn.disabled = false; }
+  });
+  form.querySelector('[data-reset]').addEventListener('click', async () => {
+    if (!confirm(`Replace the ${pageForms[slug].label} with the original text? Your edits will be lost.`)) return;
+    try {
+      fillPage(slug, await api(`/api/pages/${slug}/reset`, { method: 'POST' }));
+      show(`${pageForms[slug].label} reset to the original text.`, 'ok');
+    } catch (err) { showErr(err); }
+  });
+});
 
 // ---------- gate: admins only (runs last, once everything above is set up) ----------
 const user = await getUser();

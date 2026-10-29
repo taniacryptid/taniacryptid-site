@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contact · taniacryptid</title>
+<meta name="description" content="Say hello to taniacryptid: collaborations, speaking, community programs, streams or just hi.">
+<meta name="theme-color" content="#061a2e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=%E3%82%BF%E3%83%8B%E3%82%A2%E9%83%B5%E4%BE%BF&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/contact.css">
+</head>
+<body>
+
+<header class="masthead">
+  <a class="brand" href="/">taniacryptid</a>
+  <nav aria-label="Main"><a href="/blog">blog</a><a href="/about">about</a><a href="/community">community</a><a href="/livestreams">livestreams</a><a href="/contact" aria-current="page">contact</a></nav>
+</header>
+
+<header class="hero">
+  <p class="overline"><span class="ch">CH 05</span> Say hello<span class="kana" aria-hidden="true">郵便</span></p>
+  <h1>Contact</h1>
+  <p class="tagline">Write a note, lick the stamp, and the dino takes it from there.</p>
+  <div class="courier" aria-hidden="true"><span class="dino">🦖</span><span class="mail">💌</span></div>
+</header>
+
+<main>
+  <section class="post" aria-labelledby="form-h">
+    <h2 id="form-h" class="sr">Send a message</h2>
+
+    <form class="card" id="contact-form" name="contact" method="POST" action="/message-sent" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="subject" value="New message from taniacryptid.com">
+      <p class="sr"><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+      <div class="note-side">
+        <p class="par-avion" aria-hidden="true">Par avion · Airmail</p>
+        <label for="c-message">Your message</label>
+        <textarea id="c-message" name="message" required maxlength="5000" placeholder="Hi Tania! I wanted to say…"></textarea>
+      </div>
+
+      <div class="address-side">
+        <div class="stamp" aria-hidden="true"><span>🦖</span><small>CH 05</small></div>
+        <div class="postmark" aria-hidden="true">TANIA<br>POST</div>
+
+        <p class="to"><span>To</span> taniacryptid<br><span></span> somewhere on the internet</p>
+
+        <div class="field">
+          <label for="c-name">From</label>
+          <input id="c-name" name="name" type="text" required maxlength="120" autocomplete="name" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label for="c-email">Return address</label>
+          <input id="c-email" name="email" type="email" required maxlength="200" autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="c-reason">What it's about</label>
+          <select id="c-reason" name="reason">
+            <option>Just saying hi</option>
+            <option>Collaboration</option>
+            <option>Community programs</option>
+            <option>Speaking or hosting</option>
+            <option>Streams and showcases</option>
+            <option>Something else</option>
+          </select>
+        </div>
+
+        <button class="btn primary" type="submit" id="c-send">Send it airmail →</button>
+        <p class="err" id="c-err" role="alert" hidden>The dino tripped. Please try again in a moment.</p>
+      </div>
+    </form>
+
+    <div class="sent" id="sent" hidden tabindex="-1">
+      <div class="flight" aria-hidden="true"><span class="dino">🦖</span><span class="mail">💌</span></div>
+      <h2 class="bigline">Message received!</h2>
+      <p>The dino is on its way. I read everything and usually write back within a few days.</p>
+      <div class="cta"><a class="btn" href="/">Back to the channels</a></div>
+    </div>
+  </section>
+
+  <section class="extras">
+    <div>
+      <h2>Good reasons to write</h2>
+      <ul class="reasons">
+        <li><b>Collabs.</b> Projects, showcases and anything that puts cool people on screen.</li>
+        <li><b>Community.</b> Questions about a program, or ideas for the next one.</li>
+        <li><b>Speaking and hosting.</b> Events, panels, streams and meetups.</li>
+        <li><b>Stories.</b> A movie, game, comic or book I should know about. Always.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Elsewhere</h2>
+      <ul class="elsewhere">
+        <li><a href="https://www.youtube.com/@taniacryptid" target="_blank" rel="noopener"><b>YouTube</b><span>@taniacryptid</span></a></li>
+        <li><a href="https://www.instagram.com/taniacryptid/" target="_blank" rel="noopener"><b>Instagram</b><span>@taniacryptid</span></a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 taniacryptid · <a href="/login">Admin log in</a></footer>
+<script>
+(() => {
+  // Send without leaving the page; without JavaScript the form posts to /message-sent instead
+  const form = document.getElementById('contact-form');
+  const btn = document.getElementById('c-send');
+  const err = document.getElementById('c-err');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    err.hidden = true;
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString(),
+      });
+      if (!res.ok) throw new Error(res.status);
+      form.hidden = true;
+      const sent = document.getElementById('sent');
+      sent.hidden = false;
+      sent.focus();
+    } catch {
+      err.hidden = false;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send it airmail →';
+    }
+  });
+})();
+</script>
+</body>
+</html>
