@@ -17,7 +17,7 @@ export type About = {
 };
 
 export const defaultAbout: About = {
-  tagline: "Community builder and fan of stories. Sent back to make the internet friendlier.",
+  tagline: "Community builder and shrimpkeeper. Sent back to make the internet friendlier.",
   photo: null,
   heading: "Target identified",
   bio: `Hi, I'm Tania. Online I go by taniacryptid: part community builder, part story obsessive, part creature that comes out after dark to rewatch old movies.
@@ -87,7 +87,7 @@ export function renderAbout(a: About) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>About · taniacryptid</title>
-<meta name="description" content="${esc(a.tagline || "About taniacryptid — community builder and fan of stories.")}">
+<meta name="description" content="${esc(a.tagline || "About taniacryptid — community builder and shrimpkeeper.")}">
 <meta name="theme-color" content="#1a0506">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
