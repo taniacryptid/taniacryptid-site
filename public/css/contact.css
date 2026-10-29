@@ -1,0 +1,184 @@
+/* Airmail page: channel 05 of the homepage TV, tuned in. The dino courier from the TV delivers.
+   Shares the site's masthead, footer and core fonts (Shrikhand, VT323, Instrument Sans);
+   Courier Prime is the handwriting on the postcard, Anton the postal stamps. */
+:root {
+  color-scheme: dark;
+  --night: #061a2e;
+  --deep: #0b2a48;
+  --sky: #4cc9f0;
+  --sky-hot: #9be3ff;
+  --cream: #f4ecd8;
+  --card: #fbf5e4;
+  --rule: #c9d9e6;
+  --air-red: #d8342a;
+  --air-blue: #2a4fd6;
+  --mustard: #ffc23d;
+  --ink: #0a1420;
+  --muted: #a3bed6;
+  --red: #ff5a3c;
+  --f-display: "Shrikhand", Georgia, serif;
+  --f-action: "Anton", Impact, "Arial Narrow", sans-serif;
+  --f-signal: "VT323", "Courier New", monospace;
+  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-note: "Courier Prime", "Courier New", monospace;
+  --pad: clamp(1rem, 5vw, 4rem);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--night); }
+body {
+  margin: 0; color: var(--cream);
+  background: radial-gradient(90% 60% at 80% 0%, var(--deep), var(--night) 70%) no-repeat, var(--night);
+  font-family: var(--f-body); font-size: clamp(17px, 1rem + 0.2vw, 19px); line-height: 1.6;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: var(--sky-hot); }
+:focus-visible { outline: 2px solid var(--mustard); outline-offset: 3px; }
+p { max-width: 68ch; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- masthead: same as every other page on the site ---------- */
+.masthead {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 28px;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) var(--pad) 22px;
+}
+.brand { font-family: var(--f-display); font-size: 28px; color: var(--cream); text-decoration: none; text-shadow: 3px 3px 0 var(--red); }
+.masthead nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-family: var(--f-signal); font-size: 22px; }
+.masthead nav a { color: var(--muted); text-decoration: none; }
+.masthead nav a:hover { color: var(--cream); }
+.masthead nav a[aria-current] { color: var(--sky); }
+
+/* ---------- hero ---------- */
+.hero { position: relative; padding: clamp(2rem, 6vw, 4rem) var(--pad) 1.5rem; overflow: hidden; }
+.overline {
+  margin: 0 0 .6rem; font-family: var(--f-signal); font-size: clamp(1.3rem, 2vw, 1.6rem);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--sky);
+}
+.overline .ch { color: var(--ink); background: var(--sky); padding: 0 .35em; margin-right: .3em; }
+.overline .kana { font-family: "Dela Gothic One", var(--f-action); color: var(--cream); margin-left: .6em; font-size: .9em; }
+h1 {
+  margin: 0; font-family: var(--f-display); font-weight: 400;
+  font-size: clamp(3.4rem, 11vw, 9rem); line-height: .95;
+  color: var(--cream); text-shadow: 5px 5px 0 var(--sky), 10px 10px 0 var(--ink);
+}
+.tagline { margin: 1.2rem 0 0; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.4; color: var(--muted); max-width: 32ch; }
+
+/* the courier stomps in place, like on the homepage TV */
+.courier { position: absolute; right: var(--pad); bottom: 1rem; font-size: clamp(3.5rem, 9vw, 7rem); line-height: 1; }
+.courier .dino { display: inline-block; transform: scaleX(-1); animation: stomp .6s steps(2) infinite; }
+.courier .mail { display: inline-block; font-size: .45em; vertical-align: top; animation: bob .6s steps(2) infinite; }
+@keyframes stomp { 50% { transform: scaleX(-1) translateY(-6px) rotate(4deg); } }
+@keyframes bob { 50% { transform: translateY(-8px) rotate(-8deg); } }
+
+/* ---------- the postcard ---------- */
+.post { padding: 2rem var(--pad) 4rem; }
+.card {
+  position: relative; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  max-width: 64rem; color: var(--ink); background: var(--card);
+  border: 14px solid transparent; border-radius: 6px;
+  /* airmail stripes */
+  border-image: repeating-linear-gradient(-45deg, var(--air-red) 0 14px, var(--card) 14px 24px, var(--air-blue) 24px 38px, var(--card) 38px 48px) 14;
+  box-shadow: 12px 12px 0 var(--ink);
+}
+.note-side { display: grid; grid-template-rows: auto auto 1fr; padding: 1.4rem 1.6rem 1.6rem; border-right: 2px solid #d9cfb8; }
+.address-side { position: relative; display: grid; align-content: start; gap: .9rem; padding: 1.4rem 1.6rem 1.6rem; }
+.par-avion {
+  margin: 0 0 1rem; justify-self: start;
+  font-family: var(--f-action); text-transform: uppercase; letter-spacing: .12em; font-size: .9rem;
+  color: var(--air-blue); border: 2px solid var(--air-blue); padding: .2rem .6rem; transform: rotate(-2deg);
+}
+.card label {
+  display: block; margin-bottom: .3rem;
+  font-family: var(--f-action); text-transform: uppercase; letter-spacing: .1em; font-size: .85rem; color: #5a6a7a;
+}
+.card input, .card select, .card textarea {
+  width: 100%; font: 400 1.05rem/1.6 var(--f-note); color: var(--ink);
+  background: transparent; border: 0; border-bottom: 2px solid var(--rule); border-radius: 0; padding: .35rem 0;
+}
+.card select { cursor: pointer; }
+.card input:focus, .card select:focus, .card textarea:focus { outline: none; border-bottom-color: var(--air-blue); }
+.card textarea {
+  min-height: 18rem; resize: vertical; border: 0; line-height: 2rem; padding: 0;
+  background: repeating-linear-gradient(180deg, transparent 0 calc(2rem - 2px), var(--rule) calc(2rem - 2px) 2rem);
+  background-attachment: local;
+}
+.card textarea:focus { box-shadow: 0 0 0 2px var(--air-blue); }
+::placeholder { color: #93a1ad; }
+
+.stamp {
+  justify-self: end; display: grid; place-items: center; width: 5.4rem; height: 6.4rem; margin-bottom: .2rem;
+  background: var(--sky); border: 3px solid var(--card); outline: 2px dashed #9ab0c0; outline-offset: -1px;
+  box-shadow: 0 0 0 4px var(--card), 2px 3px 0 4px rgba(10,20,32,.25); transform: rotate(4deg);
+}
+.stamp span { font-size: 2.6rem; line-height: 1; transform: scaleX(-1); }
+.stamp small { font-family: var(--f-action); letter-spacing: .1em; font-size: .8rem; color: var(--ink); }
+.postmark {
+  position: absolute; top: 2.2rem; right: 6.2rem; width: 5.2rem; height: 5.2rem; border-radius: 50%;
+  display: grid; place-items: center; text-align: center;
+  font-family: var(--f-action); font-size: .75rem; line-height: 1.1; letter-spacing: .1em; color: rgba(216,52,42,.7);
+  border: 2px solid rgba(216,52,42,.6); transform: rotate(-14deg); pointer-events: none;
+}
+.to { margin: 0; font-family: var(--f-note); font-weight: 700; font-size: 1.1rem; line-height: 1.7; }
+.to span { display: inline-block; width: 2.4rem; font-family: var(--f-action); font-weight: 400; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: #5a6a7a; }
+
+.btn {
+  display: inline-block; cursor: pointer;
+  font: 400 1rem var(--f-action); letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+  color: var(--cream); background: transparent; border: 2px solid var(--sky); padding: .65rem 1.1rem;
+}
+.btn:hover { background: var(--sky); color: var(--ink); }
+.btn.primary { margin-top: .4rem; background: var(--air-red); color: #fff; border-color: var(--ink); box-shadow: 5px 5px 0 var(--ink); }
+.btn.primary:hover { background: var(--air-blue); }
+.btn:disabled { opacity: .6; cursor: progress; }
+.err { margin: 0; color: var(--air-red); font-weight: 700; }
+
+/* ---------- sent ---------- */
+.sent { max-width: 46rem; padding: 2rem 0; outline: none; }
+.flight { font-size: clamp(3rem, 8vw, 5rem); line-height: 1; overflow: hidden; height: 1.4em; }
+.flight .dino, .flight .mail { display: inline-block; animation: deliver 2.4s ease-in-out infinite; }
+.flight .mail { font-size: .5em; vertical-align: top; }
+.flight .dino { transform: scaleX(-1); }
+@keyframes deliver { 0% { translate: -1em 0; } 50% { translate: 2em -6px; } 100% { translate: -1em 0; } }
+.bigline {
+  margin: .4rem 0 .6rem; font-family: var(--f-display); font-weight: 400; color: var(--mustard);
+  font-size: clamp(2.6rem, 7vw, 5rem); line-height: 1.05;
+  text-shadow: 1px 1px 0 #1d4a7a, 2px 2px 0 #1d4a7a, 3px 3px 0 #1d4a7a, 4px 4px 0 #1d4a7a, 6px 6px 0 var(--ink);
+}
+.cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }
+
+/* ---------- extras ---------- */
+.extras {
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 5vw, 4rem);
+  max-width: 72rem; padding: 2rem var(--pad) 5rem;
+}
+.extras h2 {
+  margin: 0 0 1.2rem; font-family: var(--f-action); font-weight: 400; text-transform: uppercase;
+  font-size: clamp(1.8rem, 3.6vw, 2.8rem); line-height: 1; letter-spacing: .02em; color: var(--sky); text-shadow: 3px 3px 0 var(--ink);
+}
+.reasons { margin: 0; padding: 0; list-style: none; display: grid; gap: .7rem; }
+.reasons li { padding-left: 1.6rem; position: relative; }
+.reasons li::before { content: "✦"; position: absolute; left: 0; color: var(--sky); }
+.reasons b { color: var(--cream); }
+.elsewhere { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+.elsewhere a {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  padding: .8rem 1.1rem; border: 2px solid var(--deep); border-radius: 12px; background: rgba(255,255,255,.03);
+  color: var(--cream); text-decoration: none;
+}
+.elsewhere a:hover { background: var(--sky); color: var(--ink); border-color: var(--ink); }
+.elsewhere b { font-family: var(--f-action); font-weight: 400; text-transform: uppercase; letter-spacing: .06em; font-size: 1.25rem; }
+.elsewhere span { font-family: var(--f-signal); font-size: 1.3rem; }
+
+footer { padding: 28px var(--pad) 40px; color: var(--muted); font-size: 14px; border-top: 1px solid rgba(76,201,240,.2); }
+footer a { color: inherit; }
+
+@media (max-width: 760px) {
+  .courier { position: static; margin-top: 1rem; }
+  .card { grid-template-columns: 1fr; }
+  .note-side { border-right: 0; border-bottom: 2px solid #d9cfb8; }
+  .card textarea { min-height: 12rem; }
+  .extras { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .courier .dino, .courier .mail, .flight .dino, .flight .mail { animation: none; }
+}
