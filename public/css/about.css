@@ -1,6 +1,7 @@
-/* Terminator-inspired "machine vision" page. Type roles follow the taniacryptid type guide:
-   Dela Gothic One (marquee), Anton (action), Michroma (steel), Chakra Petch + VT323 (signal),
-   Archivo (body), Courier Prime (notes). */
+/* Terminator-inspired "machine vision" page: channel 02 of the homepage TV, tuned in.
+   Shares the site's masthead, footer and core fonts (Shrikhand, VT323, Instrument Sans) so it
+   feels like the same place; Anton (action), Chakra Petch (labels) and Courier Prime (notes)
+   give it its own signal. */
 :root {
   color-scheme: dark;
   --oxblood: #1a0506;
@@ -14,15 +15,13 @@
   --phosphor: #5cff8a;
   --card: #fbf3dc;
   --rule: #b9cbe0;
-  --chrome-hi: #ffffff;
-  --chrome-mid: #9fb3c8;
-  --chrome-lo: #26323f;
-  --f-marquee: "Dela Gothic One", "Arial Black", Impact, sans-serif;
+  --red: #ff5a3c;            /* the homepage's red, used for the shared masthead */
+  --muted: #d9a79c;
+  --f-display: "Shrikhand", Georgia, serif;
   --f-action: "Anton", Impact, "Arial Narrow", sans-serif;
-  --f-steel: "Michroma", "Arial Black", sans-serif;
   --f-label: "Chakra Petch", "Arial Narrow", sans-serif;
   --f-signal: "VT323", "Courier New", monospace;
-  --f-body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-note: "Courier Prime", "Courier New", monospace;
   --pad: clamp(1rem, 5vw, 4rem);
 }
@@ -37,23 +36,24 @@ a { color: var(--mustard); }
 :focus-visible { outline: 2px solid var(--mustard); outline-offset: 3px; }
 p { max-width: 68ch; }
 
-/* ---------- nav ---------- */
-nav {
+/* ---------- masthead: same as every other page on the site ---------- */
+.masthead {
   position: relative; z-index: 3;
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem 1.5rem;
-  padding: calc(1rem + env(safe-area-inset-top, 0px)) var(--pad) 1rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 28px;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) var(--pad) 22px;
 }
-nav .mark { font-family: var(--f-marquee); font-size: 1.5rem; color: var(--mustard); text-decoration: none; text-shadow: 3px 3px 0 var(--ink); }
-nav ul { display: flex; flex-wrap: wrap; gap: .25rem 1.4rem; list-style: none; margin: 0; padding: 0; }
-nav ul a { font-family: var(--f-label); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: .9rem; color: var(--hud); text-decoration: none; }
-nav ul a:hover, nav ul a[aria-current] { color: var(--mustard); }
+.brand { font-family: var(--f-display); font-size: 28px; color: var(--cream); text-decoration: none; text-shadow: 3px 3px 0 var(--red); }
+.masthead nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-family: var(--f-signal); font-size: 22px; }
+.masthead nav a { color: var(--muted); text-decoration: none; }
+.masthead nav a:hover { color: var(--cream); }
+.masthead nav a[aria-current] { color: var(--mustard); }
 
 /* ---------- hero: machine vision ---------- */
 .vision {
   position: relative; overflow: hidden; isolation: isolate;
-  min-height: 86vh; margin-top: -4.5rem;
+  min-height: min(34rem, 70vh);
   display: grid; align-items: end;
-  padding: 7rem var(--pad) 3.5rem;
+  padding: 3rem var(--pad) 3rem;
   background: radial-gradient(120% 90% at 30% 40%, var(--vision) 0%, #4a0709 55%, var(--oxblood) 100%);
 }
 .vision::after {
@@ -67,19 +67,29 @@ nav ul a:hover, nav ul a[aria-current] { color: var(--mustard); }
   animation: sweep 6s linear infinite;
 }
 @keyframes sweep { to { top: 110%; } }
+/* a quick burst of static on arrival, like flipping to channel 02 on the homepage TV */
+.tune {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,217,210,.5) 0 2px, rgba(26,5,6,.9) 2px 4px);
+  animation: tune .45s steps(5) forwards;
+}
+@keyframes tune {
+  0% { opacity: 1; background-position: 0 0; }
+  60% { opacity: .6; background-position: 0 13px; }
+  100% { opacity: 0; visibility: hidden; }
+}
 
 .title-wrap { position: relative; z-index: 2; }
 .overline {
   margin: 0 0 .6rem; font-family: var(--f-label); font-weight: 700; font-size: clamp(.95rem, 1.4vw, 1.2rem);
   letter-spacing: .16em; text-transform: uppercase; color: var(--vision-hot); text-shadow: 0 0 8px var(--vision-hot);
 }
-.overline .kana { font-family: var(--f-marquee); letter-spacing: 0; color: var(--cream); text-shadow: none; margin-left: .6em; }
+.overline .ch { color: var(--cream); background: var(--vision); padding: 0 .35em; margin-right: .3em; text-shadow: none; }
+.overline .kana { font-family: "Dela Gothic One", var(--f-action); letter-spacing: 0; color: var(--cream); text-shadow: none; margin-left: .6em; }
 h1 {
   margin: 0; font-family: var(--f-action); font-weight: 400; text-transform: uppercase;
-  font-size: clamp(5rem, 21vw, 17rem); line-height: .82; letter-spacing: .005em;
-  background: linear-gradient(176deg, var(--chrome-hi) 0%, var(--chrome-mid) 30%, var(--chrome-lo) 48%, #e8eef4 52%, var(--chrome-mid) 70%, var(--chrome-hi) 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: url(#liquid) drop-shadow(0 6px 0 rgba(0,0,0,.45));
+  font-size: clamp(4.5rem, 16vw, 12rem); line-height: .85; letter-spacing: .005em;
+  color: var(--cream); text-shadow: 6px 6px 0 var(--red), 10px 10px 0 var(--ink);
 }
 .tagline {
   margin: 1.1rem 0 0; font-family: var(--f-action); text-transform: uppercase; letter-spacing: .02em;
@@ -89,7 +99,7 @@ h1 {
 
 /* HUD readout */
 .hud {
-  position: absolute; z-index: 2; top: 6rem; right: var(--pad);
+  position: absolute; z-index: 2; top: 2.5rem; right: var(--pad);
   width: min(22rem, calc(100% - 2rem));
   font-family: var(--f-signal); font-size: 1.35rem; line-height: 1.15; letter-spacing: .04em;
   color: var(--hud); text-shadow: 0 0 6px rgba(255,60,40,.7);
@@ -112,7 +122,7 @@ h2 {
   letter-spacing: .14em; text-transform: uppercase; color: var(--vision-hot);
 }
 .stamp {
-  display: inline-block; font-family: var(--f-steel); font-size: clamp(.7rem, 1.1vw, .9rem);
+  display: inline-block; font-family: var(--f-label); font-weight: 700; font-size: clamp(.7rem, 1.1vw, .9rem);
   letter-spacing: .18em; text-transform: uppercase; color: var(--mustard);
   border: 2px solid var(--mustard); padding: .35rem .7rem .3rem; transform: rotate(-3deg);
 }
@@ -123,17 +133,17 @@ h2 {
   position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden;
   background: #0c0203; border: 2px solid var(--vision); cursor: crosshair; touch-action: none;
 }
-.target canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
-.target img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.15) brightness(.95); }
-.target.photo::before { /* red machine-vision tint over a photo */
+/* chunky pixels like the homepage TV, centred on the subject */
+.target img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 42% 30%; display: block;
+  image-rendering: pixelated; filter: grayscale(1) contrast(1.15) brightness(.95);
+}
+.target::before { /* scanlines + red machine-vision tint */
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
     repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px),
     linear-gradient(rgba(220,20,20,.55), rgba(120,8,10,.65));
   mix-blend-mode: multiply;
-}
-.target::before { /* scanlines */
-  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px);
 }
 .corner { position: absolute; width: 2.2rem; height: 2.2rem; border: 3px solid var(--mustard); z-index: 2; pointer-events: none; }
 .corner.tl { top: .6rem; left: .6rem; border-right: 0; border-bottom: 0; }
@@ -190,8 +200,8 @@ h2 {
 /* sign-off */
 .signoff { text-align: left; padding-bottom: 6rem; }
 .bigline {
-  margin: 0; font-family: var(--f-marquee); text-transform: uppercase; color: var(--mustard);
-  font-size: clamp(2.6rem, 8vw, 6.5rem); line-height: .95; letter-spacing: -.02em;
+  margin: 0; font-family: var(--f-display); font-weight: 400; color: var(--mustard);
+  font-size: clamp(2.6rem, 8vw, 6.5rem); line-height: 1.05;
   text-shadow: 1px 1px 0 #5c0810, 2px 2px 0 #5c0810, 3px 3px 0 #5c0810, 4px 4px 0 #5c0810, 5px 5px 0 #5c0810, 8px 8px 0 var(--ink);
 }
 .cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
@@ -203,11 +213,11 @@ h2 {
 .btn.primary { background: var(--mustard); color: var(--ink); border-color: var(--mustard); box-shadow: 5px 5px 0 var(--ink); }
 .btn.primary:hover { background: var(--cream); }
 
-footer { padding: 2rem var(--pad) 3rem; color: #a7736b; font-size: .9rem; background: #0d1620; }
+footer { padding: 28px var(--pad) 40px; color: var(--muted); font-size: 14px; border-top: 1px solid rgba(255,59,59,.2); }
 footer a { color: inherit; }
 
 @media (max-width: 760px) {
-  .vision { align-items: start; gap: 1.5rem; padding-top: 6rem; }
+  .vision { align-items: start; gap: 1.5rem; padding-top: 1.5rem; min-height: 0; }
   .hud { position: relative; top: auto; right: auto; order: -1; font-size: 1.15rem; }
   .dossier { grid-template-columns: 1fr; }
   .target { max-width: 26rem; }
@@ -216,5 +226,6 @@ footer a { color: inherit; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scanbar, .caret::after { animation: none; }
+  .tune { display: none; }
   .reticle { transition: none; }
 }

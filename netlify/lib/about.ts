@@ -8,7 +8,7 @@ import { coverUrl, esc } from "./html.js";
 // Bio, directive text and log entries accept Markdown.
 export type About = {
   tagline: string;
-  photo: string | null;   // Blob key from /api/uploads; null shows the CRT Buddy wireframe
+  photo: string | null;   // Blob key from /api/uploads; null shows the same photo as channel 02 on the homepage TV
   heading: string;
   bio: string;
   specs: { label: string; value: string }[];
@@ -92,15 +92,12 @@ export async function saveAbout(about: About) {
 
 const md = (s: string) => marked.parse(s, { async: false }) as string;
 const mdInline = (s: string) => marked.parseInline(s, { async: false }) as string;
+const DEFAULT_PHOTO = "/img/about.jpg";
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
 export function renderAbout(a: About) {
-  const target = a.photo
-    ? `<figure class="target photo" id="target" data-subject="TANIACRYPTID">
-        <img src="${esc(coverUrl(a.photo, "card"))}" alt="Photo of taniacryptid, seen through red machine vision">`
-    : `<figure class="target" id="target" data-subject="CRT BUDDY">
-        <canvas id="cv" width="120" height="150" role="img" aria-label="Pixel wireframe of CRT Buddy rotating in red machine vision"></canvas>`;
-  const subject = a.photo ? "TANIACRYPTID" : "CRT BUDDY";
+  // Without an uploaded photo, fall back to the "about" shot that plays on the homepage TV
+  const photo = a.photo ? coverUrl(a.photo, "card") : DEFAULT_PHOTO;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -112,38 +109,28 @@ export function renderAbout(a: About) {
 <meta name="theme-color" content="#1a0506">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400..800&family=Chakra+Petch:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Dela+Gothic+One&family=Michroma&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Chakra+Petch:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=%E3%82%BF%E3%83%8B%E3%82%A2&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="${esc(photo)}">
 <link rel="stylesheet" href="/css/about.css">
 </head>
 <body>
 
-<!-- liquid-metal displacement filter; JS eases the scale down so the title "reforms" on load -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <filter id="liquid" x="-10%" y="-20%" width="120%" height="140%">
-    <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.012 0.04" numOctaves="2" seed="7" result="n"/>
-    <feDisplacementMap id="disp" in="SourceGraphic" in2="n" scale="140" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</svg>
-
-<nav aria-label="Main">
-  <a class="mark" href="/">tc</a>
-  <ul>
-    <li><a href="/blog">Blog</a></li>
-    <li><a href="/about" aria-current="page">About</a></li>
-    <li><a href="/community">Community</a></li>
-    <li><a href="/livestreams">Livestreams</a></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-</nav>
+<header class="masthead">
+  <a class="brand" href="/">taniacryptid</a>
+  <nav aria-label="Main"><a href="/blog">blog</a><a href="/about" aria-current="page">about</a><a href="/community">community</a><a href="/livestreams">livestreams</a><a href="/contact">contact</a></nav>
+</header>
 
 <header class="vision">
+  <div class="tune" aria-hidden="true"></div>
   <div class="scanbar"></div>
   <div class="hud" aria-label="Visitor scan">
     <div id="hudlines"></div>
   </div>
   <div class="title-wrap">
-    <p class="overline">Unit profile · CH 02<span class="kana" aria-hidden="true">タニア</span></p>
-    <h1 id="title">About</h1>
+    <p class="overline"><span class="ch">CH 02</span> Unit profile<span class="kana" aria-hidden="true">タニア</span></p>
+    <h1>About</h1>
     ${a.tagline ? `<p class="tagline">${esc(a.tagline)}</p>` : ""}
   </div>
 </header>
@@ -151,10 +138,11 @@ export function renderAbout(a: About) {
 <main>
   <section aria-labelledby="who-h">
     <div class="dossier">
-      ${target}
+      <figure class="target" id="target" data-subject="TANIACRYPTID">
+        <img src="${esc(photo)}" width="320" height="240" alt="Photo of taniacryptid presenting on stage, seen through red machine vision">
         <span class="corner tl"></span><span class="corner br"></span>
-        <span class="reticle" id="ret" style="left:50%;top:42%"></span>
-        <figcaption id="ro">SUBJECT: ${subject}<br>TRACKING&nbsp;&nbsp;X 050 Y 042</figcaption>
+        <span class="reticle" id="ret" style="left:47%;top:34%"></span>
+        <figcaption id="ro">SUBJECT: TANIACRYPTID<br>TRACKING&nbsp;&nbsp;X 047 Y 034</figcaption>
       </figure>
 
       <div class="profile">
@@ -200,7 +188,7 @@ export function renderAbout(a: About) {
   </section>
 </main>
 
-<footer>© 2026 taniacryptid · <a href="/">Home</a></footer>
+<footer>© ${new Date().getFullYear()} taniacryptid · <a href="/login">Admin log in</a></footer>
 <script src="/js/about.js"></script>
 </body>
 </html>`;
