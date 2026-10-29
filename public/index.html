@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&family=Shrikhand&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=%E3%82%BF%E3%83%8B%E3%82%A2&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: dark;
@@ -77,6 +78,11 @@
   .onair {
     display: inline-flex; align-items: center; gap: 10px; margin: 0;
     font-family: "VT323", monospace; font-size: 24px; color: var(--c);
+  }
+  .kana {
+    margin-left: 6px; padding-left: 14px; border-left: 2px solid rgba(167, 163, 214, 0.3);
+    font-family: "Dela Gothic One", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; font-size: 19px;
+    color: var(--ink); text-shadow: 2px 2px 0 var(--outline);
   }
   .live { width: 11px; height: 11px; border-radius: 50%; background: var(--c); animation: live 1.4s steps(1) infinite; }
   @keyframes live { 50% { opacity: 0.25; } }
@@ -195,8 +201,8 @@
 <body>
   <div class="ticker" aria-hidden="true">
     <div class="track">
-      <span>On air: taniacryptid</span><span><b>✦</b> community builder and fan of stories</span><span><b>✦</b> CRT Buddy, live from the studio</span><span><b>✦</b> flip through the channels</span>
-      <span>On air: taniacryptid</span><span><b>✦</b> community builder and fan of stories</span><span><b>✦</b> CRT Buddy, live from the studio</span><span><b>✦</b> flip through the channels</span>
+      <span>Now playing: taniacryptid</span><span><b>✦</b> community builder and story enjoyer</span><span><b>✦</b> flip through the channels</span><span><b>✦</b> tonight: the late, late creature feature</span><span><b>✦</b> please stand by</span>
+      <span>Now playing: taniacryptid</span><span><b>✦</b> community builder and story enjoyer</span><span><b>✦</b> flip through the channels</span><span><b>✦</b> tonight: the late, late creature feature</span><span><b>✦</b> please stand by</span>
     </div>
   </div>
 
@@ -206,7 +212,7 @@
     <div class="flash" id="flash"></div>
 
     <div class="copy">
-      <p class="onair"><span class="live"></span>On air</p>
+      <p class="onair"><span class="live"></span>Now playing<span class="kana" aria-hidden="true">タニア</span></p>
       <h1>taniacryptid</h1>
       <p class="tag">community builder and fan of stories</p>
       <nav aria-label="Main">
@@ -278,7 +284,7 @@
 <script id="fs" type="x-shader/x-fragment">#version 300 es
 precision highp float;
 uniform vec2 uRes, uCenter, uRot;
-uniform float uScale, uTime, uCh, uSw, uHop, uRoar;
+uniform float uScale, uTime, uCh, uSw, uHop, uRoar, uCalm;
 uniform vec3 uCol;
 uniform vec4 uReady;                             // x: about photo, y: community photos, z: blog art, w: contact art
 uniform sampler2D uTexAbout, uTexComm, uTexBlog, uTexContact;
@@ -580,21 +586,105 @@ vec3 screenAt(vec2 su) {
   return pow(c, vec3(2.2));
 }
 
-// deep, cool sky: a soft halo behind Buddy, a warm horizon and a few rising embers
+/* ---------- tonight's creature feature, playing behind Buddy ----------
+   a smoggy kaiju-movie night: storm clouds, a city glowing on the horizon,
+   two searchlights and something big wading through the haze.
+   Everything stays dim and soft so the eye still lands on Buddy. */
+float vnoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float fbm(vec2 p) {
+  float s = 0.0, a = 0.5;
+  for (int i = 0; i < 4; i++) { s += a * vnoise(p); p = p * 2.03 + 17.1; a *= 0.5; }
+  return s;
+}
+float sdSeg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a, ba = b - a; return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0)); }
+
+// the monster in the fog, in its own units: feet at y = 0, about 1 tall, facing Buddy
+// x: whole silhouette, y: just the dorsal plates, z: distance to its eye
+vec3 kaiju(vec2 p, float t) {
+  p.x += sin(t * 0.35) * 0.03 * p.y;                        // a slow, heavy sway
+  float d = (length((p - vec2(0.05, 0.42)) / vec2(0.26, 0.42)) - 1.0) * 0.26;
+  vec2 hp = p - vec2(-0.22, 0.9 + sin(t * 0.35 + 1.0) * 0.015);
+  d = smin(d, (length(hp / vec2(0.15, 0.085)) - 1.0) * 0.085, 0.06);
+  d = smin(d, sdSeg(p, vec2(-0.02, 0.7), vec2(-0.17, 0.88)) - 0.09, 0.06);
+  d = min(d, sdSeg(p, vec2(-0.12, 0.62), vec2(-0.33, 0.5 + sin(t * 0.5) * 0.02)) - 0.035);
+  d = smin(d, sdSeg(p, vec2(0.2, 0.16), vec2(0.78, 0.03)) - mix(0.1, 0.025, clamp((p.x - 0.2) / 0.58, 0.0, 1.0)), 0.06);
+  float plates = 1e9;
+  for (int i = 0; i < 5; i++) {
+    float th = radians(100.0 - float(i) * 17.0);
+    vec2 q = abs(p - (vec2(0.05, 0.42) + vec2(0.26, 0.42) * 1.08 * vec2(cos(th), sin(th))));
+    plates = min(plates, (q.x * 1.3 + q.y * 0.75) * 0.6 - (0.05 - float(i) * 0.006));
+  }
+  return vec3(min(d, plates), plates, length(p - vec2(-0.3, 0.925)));
+}
+
 vec3 sky(vec3 rd) {
-  vec3 col = mix(vec3(0.42, 0.04, 0.22), vec3(0.03, 0.02, 0.16), smoothstep(-0.04, 0.14, rd.y));
-  col = mix(col, vec3(0.002, 0.003, 0.03), smoothstep(0.12, 0.5, rd.y));
-  col += vec3(1.0, 0.4, 0.1) * pow(max(0.0, 1.0 - abs(rd.y + 0.01) * 9.0), 4.0) * 0.45;
-  float a = atan(rd.x, -rd.z);
+  float t = uCalm > 0.5 ? 0.0 : uTime;                      // a still frame for reduced motion
+  float a = atan(rd.x, -rd.z), y = rd.y;
+
+  // smog-green night over a city glowing red on the horizon
+  vec3 col = mix(vec3(0.3, 0.05, 0.07), vec3(0.016, 0.055, 0.062), smoothstep(-0.03, 0.12, y));
+  col = mix(col, vec3(0.004, 0.005, 0.03), smoothstep(0.1, 0.42, y));
+  col += vec3(1.0, 0.42, 0.12) * pow(max(0.0, 1.0 - abs(y + 0.005) * 10.0), 4.0) * 0.4;
+
+  // lightning, now and then: one soft flicker somewhere in the storm
+  float cyc = floor(t / 9.0), ph = t - cyc * 9.0;
+  float bolt = step(0.55, h21(vec2(cyc, 4.2))) * exp(-ph * 7.0) * (0.55 + 0.45 * step(0.5, fract(ph * 11.0)));
+  bolt *= 1.0 - uCalm;
+  float flash = bolt * exp(-abs(a - (h21(vec2(cyc, 8.1)) - 0.5) * 0.9) * 5.0);
+
+  // searchlights sweeping up from the city
+  for (int i = 0; i < 2; i++) {
+    float fi = float(i);
+    vec2 q = vec2(a, y) - vec2(mix(-0.34, 0.33, fi), -0.01);
+    float th = (0.5 - fi) * 0.5 + 0.3 * sin(t * (0.11 + fi * 0.04) + fi * 2.0);
+    vec2 dir = vec2(sin(th), cos(th));
+    float along = dot(q, dir), across = abs(q.x * dir.y - q.y * dir.x);
+    col += vec3(0.55, 0.8, 0.85) * 0.07 * smoothstep(0.004 + along * 0.06, 0.0, across) * step(0.0, along) * exp(-along * 4.0);
+  }
+
+  // rolling storm clouds, lit from underneath by the fires
+  vec2 cp = vec2(a * 3.2 + t * 0.012, y * 7.0);
+  float cl = fbm(cp + vec2(fbm(cp * 0.7 + t * 0.008) * 1.4, 0.0));
+  vec3 cloud = mix(vec3(0.15, 0.06, 0.08), vec3(0.055, 0.05, 0.11), smoothstep(0.03, 0.25, y)) + vec3(0.55, 0.65, 1.0) * flash * 0.6;
+  col = mix(col, cloud, smoothstep(0.42, 0.78, cl) * smoothstep(0.02, 0.1, y) * 0.75);
+  col += vec3(0.45, 0.55, 0.9) * bolt * 0.05 * smoothstep(0.0, 0.1, y);
 
   // a gentle glow right behind Buddy, so the eye lands on him
-  col += vec3(0.35, 0.12, 0.45) * 0.35 * exp(-length(vec2(a, rd.y - 0.08)) * 5.0);
+  col += vec3(0.22, 0.3, 0.45) * 0.3 * exp(-length(vec2(a, y - 0.08)) * 5.0);
 
-  vec2 g = vec2(a * 9.0, rd.y * 14.0 - uTime * 0.6);
+  // far skyline, half lost in the smog
+  float fb = floor(a / 0.009);
+  float farTop = -0.004 + 0.022 * h21(vec2(fb, 7.0));
+  col = mix(col, vec3(0.09, 0.05, 0.06), step(y, farTop) * step(-0.04, y) * 0.6);
+
+  // the monster wading through the haze, off to Buddy's right
+  vec3 k = kaiju((vec2(a, y) - vec2(0.215, -0.012)) / 0.115, t);
+  col = mix(col, vec3(0.012, 0.022, 0.03) + vec3(0.1, 0.12, 0.2) * flash, smoothstep(0.03, -0.01, k.x) * 0.72);
+  float charge = uCalm > 0.5 ? 0.2 : smoothstep(0.7, 0.98, sin(t * 0.25));   // the plates charge up every so often
+  col += vec3(0.3, 0.75, 1.0) * smoothstep(0.02, -0.02, k.y) * (0.08 + 0.55 * charge);
+  col += vec3(1.0, 0.12, 0.05) * smoothstep(0.035, 0.0, k.z) * 0.9;            // one red eye in the dark
+
+  // near skyline with a few windows still lit
+  float nb = floor(a / 0.014), hb = h21(vec2(nb, 2.0));
+  float top = -0.006 + 0.026 * hb * hb + 0.022 * step(0.92, h21(vec2(nb, 5.0)));
+  float bld = step(y, top) * step(-0.04, y);
+  float mast = step(0.92, h21(vec2(nb, 5.0))) * step(abs(fract(a / 0.014) - 0.5), 0.06) * step(y, top + 0.012) * step(-0.04, y);
+  vec2 wc = floor(vec2(a, y) / vec2(0.0045, 0.006));
+  float lit = step(0.92, h21(wc + floor(t * 0.05 + h21(wc) * 7.0) * 0.13)) * step(y, top - 0.004);
+  col = mix(col, vec3(0.045, 0.026, 0.06), max(bld, mast) * 0.85);
+  col += vec3(1.0, 0.72, 0.32) * 0.2 * lit * bld;
+  col += vec3(1.0, 0.15, 0.08) * 0.7 * mast * step(top + 0.01, y) * step(0.5, fract(t * 0.6 + nb * 0.37));   // aircraft beacons
+
+  // a few embers drifting up from the fires
+  vec2 g = vec2(a * 9.0, y * 14.0 - t * 0.5);
   vec2 id = floor(g), f = fract(g) - 0.5;
-  if (h21(id) > 0.95) {
+  if (h21(id) > 0.965) {
     vec2 off = vec2(h21(id + 3.1) - 0.5, h21(id + 9.7) - 0.5) * 0.5;
-    col += vec3(1.0, 0.55, 0.2) * smoothstep(0.12, 0.0, length(f - off)) * smoothstep(0.7, 0.0, rd.y);
+    col += vec3(1.0, 0.55, 0.2) * 0.8 * smoothstep(0.12, 0.0, length(f - off)) * smoothstep(0.6, 0.0, y);
   }
   return col;
 }
@@ -661,9 +751,11 @@ void main() {
     } else if (mat < 7.5) {
       emit = vec3(1.0, 0.25, 0.1) * (0.6 + 0.4 * step(0.5, fract(t * 0.5)));
     } else {
-      // plain, dark ground so nothing competes with Buddy
+      // dark ground with a faint arcade grid that fades into the smog
       specAmt = 0.0;
       alb = vec3(0.035, 0.03, 0.09);
+      vec2 gq = abs(fract(pos.xz * 0.9) - 0.5);
+      emit = vec3(0.04, 0.12, 0.13) * (1.0 - smoothstep(0.0, 0.03 + tt * 0.01, 0.5 - max(gq.x, gq.y))) * exp(-tt * 0.25);
     }
 
     col = alb * (amb * vec3(0.4, 0.42, 0.85) + 1.15 * toon * vec3(1.0, 0.82, 0.55));
@@ -784,7 +876,7 @@ void main() {
   gl.enableVertexAttribArray(loc);
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = {};
-  for (const n of ['uRes', 'uCenter', 'uRot', 'uScale', 'uTime', 'uCh', 'uSw', 'uHop', 'uRoar', 'uCol', 'uReady', 'uTexAbout', 'uTexComm', 'uTexBlog', 'uTexContact'])
+  for (const n of ['uRes', 'uCenter', 'uRot', 'uScale', 'uTime', 'uCh', 'uSw', 'uHop', 'uRoar', 'uCalm', 'uCol', 'uReady', 'uTexAbout', 'uTexComm', 'uTexBlog', 'uTexContact'])
     U[n] = gl.getUniformLocation(prog, n);
 
   /* ---------- what’s on each channel ----------
@@ -905,6 +997,7 @@ void main() {
     gl.uniform1f(U.uSw, sw);
     gl.uniform1f(U.uHop, hop.y);
     gl.uniform1f(U.uRoar, t < roarUntil ? 1 : 0);
+    gl.uniform1f(U.uCalm, reduce.matches ? 1 : 0);
     gl.uniform3fv(U.uCol, col);
     gl.uniform4f(U.uReady, ready[0], ready[1], ready[2], ready[3]);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
